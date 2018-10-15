@@ -8,16 +8,17 @@ from flask_bcrypt import Bcrypt
 from flask_restplus import Api
 from flask_script import Manager
 
+from .config import Config
 from .controller.auth_controller import API as auth_ns
+
 
 # Build flask app
 APP = Flask(__name__)
-# TODO: Change config for environment variable or config file
-APP.debug = True
-APP.secret_key = 'secret-app-key'
-APP.config['SQLALCHEMY_DATABASE_URI'] = ''
+# Diable Flask-SQLAlchemy event system
+APP.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Build extensions
+CONFIG = Config(APP)
 DB = SQLAlchemy(APP)
 BCRYPT = Bcrypt(APP)
 MANAGER = Manager(APP)
