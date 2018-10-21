@@ -6,7 +6,7 @@ from flask_script import prompt_bool
 
 from .app import MANAGER, DB
 from .model.user_app import UserApp
-from .service.auth_service import generate_api_key
+from .service.auth_service import generate_api_key, save_app
 
 
 @MANAGER.command
@@ -24,7 +24,8 @@ def db(arg):
 def add_app(app_name):
     """Add a new user app"""
     api_key = generate_api_key()
-    user_app = UserApp(app_name, api_key)
+    user_app = UserApp(app_name=app_name, app_key=api_key)
+    save_app(user_app)
     print("""
     New app added:
     name: %s

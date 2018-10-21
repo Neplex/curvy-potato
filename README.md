@@ -10,7 +10,7 @@ First you need to create a config file `local_settings.py` in the project root f
 
 ```python
 DEBUG=False # True for debug
-DATABASE_URI='postgre://login:pass@127.0.0.1/base_name'
+DATABASE_URI='dialect+driver://username:password@host:port/database'
 # Uncomment the line bellow to fix an application key (eg. uuid)
 # SECRET_KEY='secret_app_key'
 ```

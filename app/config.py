@@ -3,7 +3,6 @@ Configuration loader
 """
 
 import os
-import uuid
 
 
 class Config(object):
@@ -12,8 +11,8 @@ class Config(object):
     __env_prefix = 'API_'
     __default_config = {
         'DEBUG': False,
-        'SECRET_KEY': str(uuid.uuid4()),
-        'DATABASE_URI': 'sqlite:///:memory:'
+        'SECRET_KEY': os.urandom(24),
+        'DATABASE_URI': 'sqlite:///' + os.path.normpath(os.path.join(os.path.dirname(__name__), 'db.sqlite3'))
     }
 
     def __init__(self, app=None):
@@ -45,3 +44,5 @@ class Config(object):
         except ImportError:
             print("No local settings found, use environment variables instead.")
             self.load_config_from_env()
+
+        self.app.config['SQLALCHEMY_DATABASE_URI'] = self.app.config['DATABASE_URI']
