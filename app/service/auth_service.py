@@ -2,9 +2,9 @@
 Authentication service
 """
 
-from .. import DB
-from ..model.user_app import UserApp
-from ..model.revoked_token import RevokedToken
+from app import DB
+from app.model.user_app import UserApp
+from app.model.revoked_token import RevokedToken
 
 
 def generate_api_key():
@@ -16,6 +16,12 @@ def generate_api_key():
 def save_app(app):
     """Save app to the data base"""
     DB.session.add(app)
+    DB.session.commit()
+
+
+def remove_app(app):
+    """Delete an app"""
+    DB.session.delete(app)
     DB.session.commit()
 
 

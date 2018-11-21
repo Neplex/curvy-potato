@@ -5,8 +5,9 @@ API v1
 from flask import Blueprint
 from flask_restplus import Api
 
-from . import APP, JWT_MANAGER
-from .controller.auth_controller import API as auth_ns
+from app import APP, JWT_MANAGER
+from app.controller.auth_controller import API as auth_ns
+from app.controller.struct_controller import API as struct_ns
 
 AUTHORIZATIONS = {
     'JWT': {
@@ -24,6 +25,7 @@ API = Api(API_BLUEPRINT, title='', version='1.0',
 
 # Add namespaces
 API.add_namespace(auth_ns)
+API.add_namespace(struct_ns)
 
 # Register blueprint
 APP.register_blueprint(API_BLUEPRINT)

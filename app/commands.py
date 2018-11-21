@@ -4,9 +4,9 @@ Manager commands
 
 from flask_script import prompt_bool
 
-from .app import MANAGER, DB
-from .model.user_app import UserApp
-from .service.auth_service import generate_api_key, save_app
+from app import MANAGER, DB
+from app.model.user_app import UserApp
+from app.service.auth_service import generate_api_key, save_app, remove_app
 
 
 @MANAGER.command
@@ -16,8 +16,13 @@ def db(arg):
     if arg == 'init':
         DB.create_all()
 
-    if arg == 'delete' and prompt_bool('Are you sure you want to delete the database'):
+    elif arg == 'delete' and prompt_bool('Are you sure you want to delete the database'):
         DB.drop_all()
+
+    else:
+        print("""Invalid command, try:
+        - init
+        - delete""")
 
 
 @MANAGER.command
@@ -37,4 +42,4 @@ def add_app(app_name):
 @MANAGER.command
 def delete_app(app_name):
     """Delete an user app"""
-    pass
+    remove_app(app_name)

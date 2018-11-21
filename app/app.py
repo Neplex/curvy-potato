@@ -8,7 +8,7 @@ from flask_bcrypt import Bcrypt
 from flask_script import Manager
 from flask_jwt_extended import JWTManager
 
-from .config import Config
+from app.config import Config
 
 
 # Build flask app
