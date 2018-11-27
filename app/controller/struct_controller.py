@@ -5,17 +5,75 @@ Structure controller
 from flask import url_for
 from flask_restplus import Resource, Namespace, fields, abort
 from flask_jwt_extended import jwt_required
+from geojson import Point, LineString
 
-from app.model.structure import Structure
+from app.model.structure import *
 from app.service.struct_service import get_all_structure, add_structure, get_structure, delete_structure
 
 API = Namespace('struct', description='structures related operations', path='/')
 
+# ======================================================================================================================
+
 STRUCTURE_MODEL = API.model('structure', {
+    'id': fields.Integer(required=True, description='Structure identifier'),
     'name': fields.String(required=True, description='Structure name'),
     'description': fields.String(required=False, description='Structure description'),
-    'geometry': fields.String(required=True, description='Structure geometry')
-}, skip_none=True)
+    'structure_type': fields.String(required=True, description='Structure type')
+})
+
+FITNESS_TRAIL_MODEL = API.inherit('fitness trail', STRUCTURE_MODEL, {
+    'difficulty': fields.Integer(required=True)
+})
+
+HOSPITAL_MODEL = API.inherit('hospital', STRUCTURE_MODEL, {
+    'emergency': fields.Boolean(required=True),
+    'maternity': fields.Boolean(required=True)
+})
+
+# ===
+
+GEOMETRY_MODEL = API.model('GeoJSON geometry', {
+    'type': fields.String(required=True),
+})
+
+POINT_MODEL = API.inherit('GeoJSON point', GEOMETRY_MODEL, {
+    'coordinates': fields.List(fields.Integer())
+})
+
+LINESTRING_MODEL = API.inherit('GeoJSON linestring', GEOMETRY_MODEL, {
+    'coordinates': fields.List(fields.List(fields.Integer()))
+})
+
+# ===
+
+FEATURE_MODEL = API.model('GeoJSON feature', {
+    'type': fields.String(default='Feature'),
+    'geometry': fields.Polymorph({
+        Point: POINT_MODEL,
+        LineString: LINESTRING_MODEL
+    }),
+    'properties': fields.Polymorph({
+        FitnessTrail: FITNESS_TRAIL_MODEL,
+        Hospital: HOSPITAL_MODEL
+    })
+})
+
+FEATURE_COLLECTION_MODEL = API.model('GeoJSON feature collection', {
+    'type': fields.String(default='FeatureCollection'),
+    'features': fields.List(fields.Nested(FEATURE_MODEL))
+})
+
+# ======================================================================================================================
+
+
+def structure_to_geojson(s):
+    return {'properties': s, 'geometry': s.geometry}
+
+
+def structures_to_geojson(sl):
+    return {'features': [structure_to_geojson(s) for s in sl]}
+
+# ======================================================================================================================
 
 
 @API.route('/structures')
@@ -25,22 +83,23 @@ class StructureListController(Resource):
     """
 
     @API.doc('list_resources', security=None)
-    @API.marshal_list_with(STRUCTURE_MODEL)
+    @API.marshal_with(FEATURE_COLLECTION_MODEL)
     def get(self):
         """List all structures"""
         # todo: return urls or object ?
-        return get_all_structure()
+        return structures_to_geojson(get_all_structure())
 
-    @jwt_required
+    #@jwt_required
     @API.doc('create_structure')
-    @API.expect(STRUCTURE_MODEL)
-    @API.marshal_with(STRUCTURE_MODEL, code=201)
+    @API.expect(FEATURE_MODEL)
+    @API.marshal_with(FEATURE_MODEL, code=201)
     def post(self):
         """Create a new structure"""
         data = API.payload
-        struct = Structure(name=data['name'], description=data['description'], geom=data['geometry']) # todo: check null element + convertion
+        # todo: check null element + convertion
+        struct = FitnessTrail(name="fitness trail", description="trail", difficulty=10, geom="LINESTRING(30 10, 20 20)")
         add_structure(struct)
-        return struct, 201, {'Location': url_for('api.struct_structure_controller', id=struct.id)}
+        return structure_to_geojson(struct), 201, {'Location': url_for('api.struct_structure_controller', id=struct.id)}
 
 
 @API.route('/structures/<int:id>')
@@ -52,20 +111,20 @@ class StructureController(Resource):
     """
 
     @API.doc('get_structure', security=None)
-    @API.marshal_with(STRUCTURE_MODEL)
+    @API.marshal_with(FEATURE_MODEL)
     def get(self, id):
         """Get the resource"""
         struct = get_structure(id)
 
         if struct is not None:
-            return struct
+            return structure_to_geojson(struct)
 
         self.not_found(id)
 
     @jwt_required
     @API.doc('update_structure')
-    @API.expect(STRUCTURE_MODEL)
-    @API.marshal_with(STRUCTURE_MODEL)
+    @API.expect(FEATURE_MODEL)
+    @API.marshal_with(FEATURE_MODEL)
     def put(self, id):
         """Update a structure given its identifier"""
         # todo: do something

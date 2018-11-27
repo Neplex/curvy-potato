@@ -2,7 +2,7 @@
 Structure service
 """
 
-from sqlalchemy import func
+from sqlalchemy.orm import with_polymorphic
 
 from app import DB
 from app.model.structure import Structure
@@ -10,7 +10,7 @@ from app.model.structure import Structure
 
 def get_all_structure():
     """Get all structures."""
-    return Structure.query.all()
+    return DB.session.query(with_polymorphic(Structure, '*'))
 
 
 def add_structure(struct):

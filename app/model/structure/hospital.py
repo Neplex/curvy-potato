@@ -9,8 +9,7 @@ from . import Structure
 class Hospital(Structure):
     """Hospital structure"""
 
-    urgence = DB.Column(DB.Boolean)
-    maternite = DB.Column(DB.Boolean)
+    emergency = DB.Column(DB.Boolean)
+    maternity = DB.Column(DB.Boolean)
 
-    def __repr__(self):
-        return '<Hospital %r>' % self.name
+    __mapper_args__ = {'polymorphic_identity': 'hospital'}
