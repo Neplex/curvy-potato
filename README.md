@@ -6,20 +6,14 @@ It uses **Flask/Flask-Restplus** for the server and **SQLAlchemy** as ORM with i
 
 ## Quick start
 
-First you need to create a config file `local_settings.py` in the project root folder as follow:
+First you need to create an environment file `.env` in the project root folder as follow:
 
-```python
+```bash
 DEBUG=False # True for debug
 DATABASE_URI='dialect+driver://username:password@host:port/database'
 # Uncomment the line bellow to fix an application key (eg. uuid)
 # SECRET_KEY='secret_app_key'
 ```
-
-For production you can add environment variables instead of the file (same config name with 'API\_' prefix):
-
--   API_DEBUG
--   API_SECRET_KEY
--   API_DATABASE_URI
 
 If you do not specify an application secret key, a random key is used when the server starts.
 
@@ -29,15 +23,15 @@ You can now start playing with the API by starting it with `python manage.py run
 
 ## How to use
 
-To interact with the project, you need to use the manager (`python manage.py`). The main commands are listed bellow but it can be outdated, we recommend to read the help from the command.
+To interact with the project, you need to use the command line interface (`flask`). The main commands are listed bellow but it can be outdated, we recommend to read the help from the command.
 
 | Command           |  description                                                       |
 | :---------------- | :----------------------------------------------------------------- |
 | runserver         | Start the development server.                                      |
-| db init           | Initialize the database.                                           |
-| db delete         | Delete the database.                                               |
-| add_app _name_    | Add a new application that can use the API. (Generate an API key.) |
-| delete_app _name_ | Delete an application.                                             |
+| db --init         | Initialize the database.                                           |
+| db --delete       | Delete the database.                                               |
+| app add _name_    | Add a new application that can use the API. (Generate an API key.) |
+| app delete _name_ | Delete an application.                                             |
 
 ## API
 
