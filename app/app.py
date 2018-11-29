@@ -7,7 +7,6 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 import os
-#from app.config import Config
 
 
 # Build flask app
@@ -21,7 +20,6 @@ APP.config['DEBUG'] = os.getenv('DEBUG')
 APP.config['SECRET_KEY'] = os.getenv('SECRET_KEY',os.urandom(24))
 
 # Build extensions
-#CONFIG = Config(APP)
 DB = SQLAlchemy(APP)
 BCRYPT = Bcrypt(APP)
 JWT_MANAGER = JWTManager(APP)
