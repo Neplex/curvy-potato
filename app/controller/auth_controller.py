@@ -2,10 +2,10 @@
 Authentication controller
 """
 
-from flask_restplus import Resource, Namespace, fields, abort
 from flask_jwt_extended import jwt_required, create_access_token, get_raw_jwt
+from flask_restplus import Resource, Namespace, fields, abort
 
-from app import JWT_MANAGER
+from app.app import JWT_MANAGER
 from app.service.auth_service import get_user_app, revoke_jti, jti_is_revoked
 
 API = Namespace('auth', description='authentication related operations')
@@ -32,6 +32,7 @@ class Login(Resource):
     """
     Login Resource
     """
+
     @API.doc('login', security=None)
     @API.expect(AUTH_MODEL)
     @API.marshal_with(JWT_MODEL, description='Successfully logged in')
@@ -54,6 +55,7 @@ class Logout(Resource):
     """
     Logout Resource
     """
+
     @jwt_required
     @API.doc('logout')
     @API.response(200, '')

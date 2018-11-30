@@ -3,10 +3,9 @@ Fitness trail object
 """
 
 from sqlalchemy import func
-from geoalchemy2 import Geometry
 
-from app import DB
-from . import Structure
+from app.app import DB
+from .structure import Structure
 
 
 class FitnessTrail(Structure):

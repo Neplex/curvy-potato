@@ -2,12 +2,12 @@
 Main
 """
 
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_bcrypt import Bcrypt
-from flask_jwt_extended import JWTManager
 import os
 
+from flask import Flask
+from flask_bcrypt import Bcrypt
+from flask_jwt_extended import JWTManager
+from flask_sqlalchemy import SQLAlchemy
 
 # Build flask app
 APP = Flask(__name__)
@@ -17,7 +17,7 @@ APP.config['JWT_BLACKLIST_ENABLED'] = True
 APP.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
 APP.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
 APP.config['DEBUG'] = os.getenv('DEBUG')
-APP.config['SECRET_KEY'] = os.getenv('SECRET_KEY',os.urandom(24))
+APP.config['SECRET_KEY'] = os.getenv('SECRET_KEY', os.urandom(24))
 
 # Build extensions
 DB = SQLAlchemy(APP)

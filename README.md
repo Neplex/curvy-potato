@@ -17,7 +17,7 @@ DATABASE_URI='dialect+driver://username:password@host:port/database'
 
 If you do not specify an application secret key, a random key is used when the server starts.
 
-You must install the required dependencies with `pip install -r Requirements.txt` (we recommend using a [virtual environment](https://virtualenv.pypa.io/en/stable/)).
+You must install the required dependencies with `pip install -r requirement.txt` (we recommend using a [virtual environment](https://virtualenv.pypa.io/en/stable/)).
 
 You can now start playing with the API by starting it with `python manage.py runserver` and going to <http://127.0.0.1:5000/v1/>
 
@@ -27,9 +27,9 @@ To interact with the project, you need to use the command line interface (`flask
 
 | Command           |  description                                                       |
 | :---------------- | :----------------------------------------------------------------- |
-| runserver         | Start the development server.                                      |
-| db --init         | Initialize the database.                                           |
-| db --delete       | Delete the database.                                               |
+| run               | Start the development server.                                      |
+| database --init   | Initialize the database.                                           |
+| database --delete | Delete the database.                                               |
 | app add _name_    | Add a new application that can use the API. (Generate an API key.) |
 | app delete _name_ | Delete an application.                                             |
 

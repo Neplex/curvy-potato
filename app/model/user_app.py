@@ -4,7 +4,7 @@ User app object
 
 from datetime import datetime
 
-from app import DB, BCRYPT
+from app.app import DB, BCRYPT
 
 
 class UserApp(DB.Model):

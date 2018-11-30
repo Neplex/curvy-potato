@@ -2,8 +2,8 @@
 Hospital object
 """
 
-from app import DB
-from . import Structure
+from app.app import DB
+from .structure import Structure
 
 
 class Hospital(Structure):

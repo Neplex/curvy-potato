@@ -4,14 +4,16 @@ CLI custom commands
 
 import click
 from flask.cli import AppGroup
-from app import DB, APP
+
+from app.app import DB, APP
 from app.model.user_app import UserApp
 from app.service.auth_service import generate_api_key, save_app, remove_app
+
 
 @APP.cli.command()
 @click.option("--init", "option", flag_value="init", help="Initialization of the database.")
 @click.option("--delete", "option", flag_value="delete", help="Deletion of the database.")
-def db(option):
+def database(option):
     """Data base util."""
     if option == 'init':
         DB.create_all()
@@ -19,10 +21,12 @@ def db(option):
     elif option == 'delete' and click.confirm('Are you sure you want to delete the database'):
         DB.drop_all()
 
-# Command group for user app
-app_group = AppGroup("app",help="App management.")
 
-@app_group.command("add")
+# Command group for user app
+APP_GROUP = AppGroup("app", help="App management.")
+
+
+@APP_GROUP.command("add")
 @click.argument("app_name")
 def add_app(app_name):
     """Add a new user app"""
@@ -36,11 +40,13 @@ def add_app(app_name):
         (Warning, this key is private and cannot be restored)
     """ % (app_name, api_key))
 
-@app_group.command("delete")
+
+@APP_GROUP.command("delete")
 @click.argument("app_name")
 def delete_app(app_name):
     """Delete an user app"""
     remove_app(app_name)
 
+
 # Add group to cli
-APP.cli.add_command(app_group)
+APP.cli.add_command(APP_GROUP)

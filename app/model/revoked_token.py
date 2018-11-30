@@ -4,7 +4,7 @@ Revoked tokens
 
 from datetime import datetime
 
-from app import DB
+from app.app import DB
 
 
 class RevokedToken(DB.Model):

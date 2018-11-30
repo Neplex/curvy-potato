@@ -3,16 +3,17 @@ Structure controller
 """
 
 from flask import url_for
-from flask_restplus import Resource, Namespace, fields, abort
 from flask_jwt_extended import jwt_required
+from flask_restplus import Resource, Namespace, fields, abort
 from geojson import Point, LineString
 
-from app.model.structure import *
-from app.service.struct_service import get_all_structure, add_structure, get_structure, delete_structure
+from app.model.structure import FitnessTrail, Hospital
+from app.service.struct_service import \
+    get_all_structure, add_structure, get_structure, delete_structure
 
 API = Namespace('struct', description='structures related operations', path='/')
 
-# ======================================================================================================================
+# ==================================================================================================
 
 STRUCTURE_MODEL = API.model('structure', {
     'id': fields.Integer(required=True, description='Structure identifier'),
@@ -63,17 +64,22 @@ FEATURE_COLLECTION_MODEL = API.model('GeoJSON feature collection', {
     'features': fields.List(fields.Nested(FEATURE_MODEL))
 })
 
-# ======================================================================================================================
+
+# ==================================================================================================
 
 
-def structure_to_geojson(s):
-    return {'properties': s, 'geometry': s.geometry}
+def structure_to_geojson(structure):
+    """Convert structure object to geojson"""
+    return {'properties': structure, 'geometry': structure.geometry}
 
 
-def structures_to_geojson(sl):
-    return {'features': [structure_to_geojson(s) for s in sl]}
+def structures_to_geojson(structure_list):
+    """Convert structure list to geojson"""
+    return {'features': [structure_to_geojson(
+        structure) for structure in structure_list]}
 
-# ======================================================================================================================
+
+# ==================================================================================================
 
 
 @API.route('/structures')
@@ -86,25 +92,27 @@ class StructureListController(Resource):
     @API.marshal_with(FEATURE_COLLECTION_MODEL)
     def get(self):
         """List all structures"""
-        # todo: return urls or object ?
+        # TODO: return urls or object ?
         return structures_to_geojson(get_all_structure())
 
-    #@jwt_required
+    @jwt_required
     @API.doc('create_structure')
     @API.expect(FEATURE_MODEL)
     @API.marshal_with(FEATURE_MODEL, code=201)
     def post(self):
         """Create a new structure"""
-        data = API.payload
-        # todo: check null element + convertion
-        struct = FitnessTrail(name="fitness trail", description="trail", difficulty=10, geom="LINESTRING(30 10, 20 20)")
+        # data = API.payload
+        # TODO: check null element + convertion
+        struct = FitnessTrail(name="fitness trail", description="trail",
+                              difficulty=10, geom="LINESTRING(30 10, 20 20)")
         add_structure(struct)
-        return structure_to_geojson(struct), 201, {'Location': url_for('api.struct_structure_controller', id=struct.id)}
+        return structure_to_geojson(struct), 201, {'Location': url_for(
+            'api.struct_structure_controller', structure_id=struct.id)}
 
 
-@API.route('/structures/<int:id>')
+@API.route('/structures/<int:structure_id>')
 @API.response(404, 'Structure not found')
-@API.param('id', 'The structure identifier')
+@API.param('structure_id', 'The structure identifier')
 class StructureController(Resource):
     """
     Show a single structure and lets you update or delete them
@@ -112,34 +120,33 @@ class StructureController(Resource):
 
     @API.doc('get_structure', security=None)
     @API.marshal_with(FEATURE_MODEL)
-    def get(self, id):
+    def get(self, structure_id):
         """Get the resource"""
-        struct = get_structure(id)
+        struct = get_structure(structure_id)
 
-        if struct is not None:
-            return structure_to_geojson(struct)
+        if struct is None:
+            self.not_found(structure_id)
 
-        self.not_found(id)
+        return structure_to_geojson(struct)
 
     @jwt_required
     @API.doc('update_structure')
     @API.expect(FEATURE_MODEL)
     @API.marshal_with(FEATURE_MODEL)
-    def put(self, id):
+    def put(self, structure_id):
         """Update a structure given its identifier"""
-        # todo: do something
-        pass
+        # TODO: do something
 
     @jwt_required
     @API.doc('delete_structure')
     @API.response(204, 'Structure deleted')
-    def delete(self, id):
+    def delete(self, structure_id):
         """Delete a structure given its identifier"""
-        delete_structure(id)
+        delete_structure(structure_id)
         return '', 204
 
-    # todo: Replace it by exception
+    # TODO: Replace it by exception
     @staticmethod
-    def not_found(id):
+    def not_found(structure_id):
         """Wrapper for not found error"""
-        abort(404, "Structure %i doesn't exist" % id)
+        abort(404, "Structure %i doesn't exist" % structure_id)

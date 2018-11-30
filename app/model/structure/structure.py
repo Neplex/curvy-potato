@@ -3,17 +3,16 @@ Structure object
 """
 
 import geojson
-
-from sqlalchemy import func
 from geoalchemy2 import Geometry
+from sqlalchemy import func
 
-from app import DB
+from app.app import DB
 
 
 class Structure(DB.Model):
     """Base class for Structures."""
 
-    #__abstract__ = True
+    # __abstract__ = True
 
     id = DB.Column(DB.Integer, primary_key=True, autoincrement=True)
     name = DB.Column(DB.String(50), nullable=False)
@@ -25,6 +24,7 @@ class Structure(DB.Model):
 
     @property
     def geometry(self):
+        """Get geometry as geojson object"""
         return geojson.loads(DB.session.scalar(func.ST_AsGeoJSON(self.geom)))
 
     def __repr__(self):

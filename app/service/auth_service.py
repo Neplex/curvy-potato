@@ -2,9 +2,9 @@
 Authentication service
 """
 
-from app import DB
-from app.model.user_app import UserApp
+from app.app import DB
 from app.model.revoked_token import RevokedToken
+from app.model.user_app import UserApp
 
 
 def generate_api_key():
