@@ -13,7 +13,7 @@ First you need to create an environment file `.env` in the project root folder a
 
 ```bash
 DEBUG=False # True for debug
-DATABASE_URI='dialect+driver://username:password@host:port/database'
+DATABASE_URL='dialect+driver://username:password@host:port/database'
 # Uncomment the line bellow to fix an application key (eg. uuid)
 # SECRET_KEY='secret_app_key'
 ```
