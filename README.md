@@ -1,5 +1,8 @@
 # curvy-potato
 
+[![Build Status](https://img.shields.io/travis/neplex/curvy-potato.svg)](https://travis-ci.com/Neplex/curvy-potato)
+![License](https://img.shields.io/github/license/neplex/curvy-potato.svg)
+
 SIGN project
 
 It uses **Flask/Flask-Restplus** for the server and **SQLAlchemy** as ORM with it GIS extension **GeoAlchemy2**.
