@@ -13,12 +13,13 @@ from app.service.auth_service import generate_api_key, save_app, remove_app
 @APP.cli.command()
 @click.option("--init", "option", flag_value="init", help="Initialization of the database.")
 @click.option("--delete", "option", flag_value="delete", help="Deletion of the database.")
-def database(option):
+@click.option("--force", "force", flag_value="force", help="Don't need to confirm.")
+def database(option, force):
     """Data base util."""
     if option == 'init':
         DB.create_all()
 
-    elif option == 'delete' and click.confirm('Are you sure you want to delete the database'):
+    elif option == 'delete' and (force == 'force' or click.confirm('Are you sure you want to delete the database')):
         DB.drop_all()
 
 
