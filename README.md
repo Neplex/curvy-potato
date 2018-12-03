@@ -1,6 +1,6 @@
 # curvy-potato
 
-[![Build Status](https://img.shields.io/travis/com/neplex/curvy-potato.svg)](https://travis-ci.com/Neplex/curvy-potato)
+[![Build Status](https://travis-ci.com/Neplex/curvy-potato.svg?branch=develop)](https://travis-ci.com/Neplex/curvy-potato)
 ![License](https://img.shields.io/github/license/neplex/curvy-potato.svg)
 
 SIGN project
