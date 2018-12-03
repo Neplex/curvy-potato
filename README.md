@@ -1,6 +1,7 @@
 # curvy-potato
 
 [![Build Status](https://travis-ci.com/Neplex/curvy-potato.svg?branch=develop)](https://travis-ci.com/Neplex/curvy-potato)
+[![Heroku](http://heroku-badge.herokuapp.com/?app=curvy-potato-dev&svg=1&style=flat)](https://curvy-potato-dev.herokuapp.com/)
 ![License](https://img.shields.io/github/license/neplex/curvy-potato.svg)
 
 SIGN project
@@ -38,4 +39,11 @@ To interact with the project, you need to use the command line interface (`flask
 
 ## API
 
-The API was documented with swagger. You can access it on heroku ([master](https://curvy-potato.herokuapp.com/v1/) or [develop](https://curvy-potato-dev.herokuapp.com/v1/) branch)
+The API was documented with swagger. You can access it on heroku ([master](https://curvy-potato.herokuapp.com/) or [develop](https://curvy-potato-dev.herokuapp.com/) branch)
+
+## Status
+
+| Branch  | Build                                                                                                                      | Deploy                                                                                                                         |
+| :------ | :------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------: |
+| master  | [![Build Status](https://travis-ci.com/Neplex/curvy-potato.svg?branch=master)](https://travis-ci.com/Neplex/curvy-potato)  | [![Heroku](http://heroku-badge.herokuapp.com/?app=curvy-potato&svg=1&style=flat)](https://curvy-potato.herokuapp.com/)         |
+| develop | [![Build Status](https://travis-ci.com/Neplex/curvy-potato.svg?branch=develop)](https://travis-ci.com/Neplex/curvy-potato) | [![Heroku](http://heroku-badge.herokuapp.com/?app=curvy-potato-dev&svg=1&style=flat)](https://curvy-potato-dev.herokuapp.com/) |
