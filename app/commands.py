@@ -19,7 +19,8 @@ def database(option, force):
     if option == 'init':
         DB.create_all()
 
-    elif option == 'delete' and (force == 'force' or click.confirm('Are you sure you want to delete the database')):
+    elif option == 'delete' \
+            and (force == 'force' or click.confirm('Are you sure you want to delete the database')):
         DB.drop_all()
 
 

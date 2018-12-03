@@ -14,7 +14,8 @@ install:
 script:
   #  - coverage erase
   #  - coverage run && coverage html
-  - pylint --output-format=text app
+  # Disable some warning: too-few-public-methods (R0903), no-self-use (R0201), fixme (W0511)
+  - pylint --output-format=text --disable=R0903,R0201,W0511 app
 
 #after_success:
 #  - codecov

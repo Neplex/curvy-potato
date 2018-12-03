@@ -32,4 +32,5 @@ APP.register_blueprint(API_BLUEPRINT)
 
 # Small hack for flask-restplus error handling system to handle flask-jwt-extended errors
 # From: https://github.com/vimalloc/flask-jwt-extended/issues/86#issuecomment-335509456
+# pylint: disable=W0212
 JWT_MANAGER._set_error_handler_callbacks(API)
