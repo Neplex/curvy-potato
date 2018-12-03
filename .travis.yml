@@ -1,0 +1,29 @@
+language: python
+
+python:
+  - '3.5'
+  - '3.6'
+  - 'pypy3.5'
+
+install:
+  - pip install -r requirements.txt
+  - pip install coverage
+  - pip install codecov
+  - pip install pylint
+
+script:
+  #  - coverage erase
+  #  - coverage run && coverage html
+  # Disable some warning: too-few-public-methods (R0903), no-self-use (R0201), fixme (W0511)
+  - pylint --output-format=text --disable=R0903,R0201,W0511 app
+
+#after_success:
+#  - codecov
+
+deploy:
+  provider: heroku
+  api_key:
+    secure: h1qVA+k/OwJdEt3/ZmDGHQQXV9wazTW6oxiFaslfFJ6nfQzhmW1Wp2LPWztwY08SsX2JQ1hngzqSRhj/qzTxfcjjE9WCFw2SPH1OFy9Des5ccx1IYB4kzv/Yjed8jaEkNOV4KQfr5o1DOmzdMVJmVg3KOYie1qs4ktIjSML9AGrMhvevs6D1bl88DtWiYLNlmzYGNM5cq+uAudAxRok4UwMTd83GHKlMNRf66hU4TOXwSjqkxiwoQGc5JIH2m53pkTLN74fIBmAosVxLp9DMtdFOPreAR7hkCBD1RjiWd4DJOzR1w1p1AptiVRILIGIyKHhb8/u9i9D1lcfbnaZdgzeFUqtbL1/8Aq1YUk50wy5flqmzJIop8oEZ9Pd4f6MHkgSYIqONno+oEezyfJbxQPjSaBfZ33zxaQSfkN0DIEhFho1Mx0XPxIMMLNODj968/5B8MmfFCxKqeSLnQwYQc4de989b7D+1YrhyZPeW9JFCITJMXKIMoTvKAnUOfNViLkz9zwmiR/wgxtHSoqtmbxAuPTOvD4m4GhJz3OnrDJH+QNbZX3gXc9rUl3WV1IBH7lDe+2knXDzHdd4f6Z86lEhWgp//b2F8ltnU3bLw8DHNQ2fKFS+MsUsj8oEnr74OEUfNnIPs1OQUvC7yRk8UEKTTuKh0LdHgjZbmYg3VSIw=
+  app:
+    master: curvy-potato
+    develop: curvy-potato-dev

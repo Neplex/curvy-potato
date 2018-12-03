@@ -15,8 +15,8 @@ APP = Flask(__name__)
 APP.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 APP.config['JWT_BLACKLIST_ENABLED'] = True
 APP.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
-APP.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
-APP.config['DEBUG'] = os.getenv('DEBUG')
+APP.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
+APP.config['DEBUG'] = os.getenv('DEBUG', 'False')
 APP.config['SECRET_KEY'] = os.getenv('SECRET_KEY', os.urandom(24))
 
 # Build extensions

@@ -1,5 +1,8 @@
 # curvy-potato
 
+[![Build Status](https://img.shields.io/travis/com/neplex/curvy-potato.svg)](https://travis-ci.com/Neplex/curvy-potato)
+![License](https://img.shields.io/github/license/neplex/curvy-potato.svg)
+
 SIGN project
 
 It uses **Flask/Flask-Restplus** for the server and **SQLAlchemy** as ORM with it GIS extension **GeoAlchemy2**.
@@ -10,16 +13,16 @@ First you need to create an environment file `.env` in the project root folder a
 
 ```bash
 DEBUG=False # True for debug
-DATABASE_URI='dialect+driver://username:password@host:port/database'
+DATABASE_URL='dialect+driver://username:password@host:port/database'
 # Uncomment the line bellow to fix an application key (eg. uuid)
 # SECRET_KEY='secret_app_key'
 ```
 
 If you do not specify an application secret key, a random key is used when the server starts.
 
-You must install the required dependencies with `pip install -r requirement.txt` (we recommend using a [virtual environment](https://virtualenv.pypa.io/en/stable/)).
+You must install the required dependencies with `pip install -r requirements.txt` (we recommend using a [virtual environment](https://virtualenv.pypa.io/en/stable/)).
 
-You can now start playing with the API by starting it with `python manage.py runserver` and going to <http://127.0.0.1:5000/v1/>
+You can now start playing with the API by starting it with `flask run` and going to <http://127.0.0.1:5000/v1/>
 
 ## How to use
 
@@ -35,4 +38,4 @@ To interact with the project, you need to use the command line interface (`flask
 
 ## API
 
-The API was documented with swagger. You can access it at <http://127.0.0.1:5000/v1/>
+The API was documented with swagger. You can access it on heroku ([master](https://curvy-potato.herokuapp.com/v1/) or [develop](https://curvy-potato-dev.herokuapp.com/v1/) branch)
