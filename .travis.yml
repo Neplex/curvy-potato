@@ -1,4 +1,4 @@
-language: python
+language:        python
 
 python:
   - '3.6'
@@ -20,9 +20,9 @@ script:
 #  - codecov
 
 deploy:
-  provider: heroku
+  provider:      heroku
   api_key:
-    secure: XSVgHYIeu7JajEAimGaJFPHRAuPLaVI/fD3o3bfAH585iXEvn4nE9rnFTpTc1i+c/gEPfU3UwzjVLogFlvG+RYQObm4LycgcUqnNyNI27jNJZztZChmShzTa4Nggr5B4x7U6okN0zQkEfWGyS6S+Epax7NoP/SmMy0GDB4r/Zf6Pzz8C1gwvB8j/uxpkpsQa/5U5/t6CURReojdH6oWCo8357KvRlah6Cri3bRoTiyrNWU/kYA5g4Iv9fHrnAzM0PMgRk6+pJX74RHek7VIQFfrG7QkvL4VQxQ9KwLgms9UMAK7C3ijcFeGbJdzGhpt/eh1lE/NdhHWJ6SzdaEYmV+NIFc48pPewtKNGwpYRr0nOtL9oRyPeeXjtO1XPBHFdQHmBTqyCLElNacgB0V4wnMF1X1+liQurcEyAI+pcv4bdvzPIyu/g/CTbz/A7nLoB6QaltSC4MqW1+ycUmR245bUs1QsKqgay6f/JyMyMwudZkY37KngaqWj2rirCEvSnVCH/lCdCOHbd3SNZvBJu8GZwFR3F5I7hymnntJhOU5iYIKehiNThW3zRdXDKeexC8uLd+9XtvkUQTQoC3bxrPMDMlO2MF0RwXtQla1EM4O5gSYGbQGMt0RbUUIJHrd6+HH+hdy10M9sg+ugC4VMgtV/IYyjjS/D3py/miaP3npk=
+    secure:      XSVgHYIeu7JajEAimGaJFPHRAuPLaVI/fD3o3bfAH585iXEvn4nE9rnFTpTc1i+c/gEPfU3UwzjVLogFlvG+RYQObm4LycgcUqnNyNI27jNJZztZChmShzTa4Nggr5B4x7U6okN0zQkEfWGyS6S+Epax7NoP/SmMy0GDB4r/Zf6Pzz8C1gwvB8j/uxpkpsQa/5U5/t6CURReojdH6oWCo8357KvRlah6Cri3bRoTiyrNWU/kYA5g4Iv9fHrnAzM0PMgRk6+pJX74RHek7VIQFfrG7QkvL4VQxQ9KwLgms9UMAK7C3ijcFeGbJdzGhpt/eh1lE/NdhHWJ6SzdaEYmV+NIFc48pPewtKNGwpYRr0nOtL9oRyPeeXjtO1XPBHFdQHmBTqyCLElNacgB0V4wnMF1X1+liQurcEyAI+pcv4bdvzPIyu/g/CTbz/A7nLoB6QaltSC4MqW1+ycUmR245bUs1QsKqgay6f/JyMyMwudZkY37KngaqWj2rirCEvSnVCH/lCdCOHbd3SNZvBJu8GZwFR3F5I7hymnntJhOU5iYIKehiNThW3zRdXDKeexC8uLd+9XtvkUQTQoC3bxrPMDMlO2MF0RwXtQla1EM4O5gSYGbQGMt0RbUUIJHrd6+HH+hdy10M9sg+ugC4VMgtV/IYyjjS/D3py/miaP3npk=
   app:
-    master: curvy-potato
-    develop: curvy-potato-dev
+    master:      healthy-api-master
+    develop:     healthy-api-dev
