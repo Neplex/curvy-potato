@@ -4,7 +4,7 @@ Authentication service
 
 from app.app import DB
 from app.model.revoked_token import RevokedToken
-from app.model.user_app import UserApp
+from app.model.user import User
 
 
 def generate_api_key():
@@ -13,24 +13,24 @@ def generate_api_key():
     return str(uuid.uuid4())
 
 
-def save_app(app):
-    """Save app to the data base"""
-    DB.session.add(app)
+def save_user(user):
+    """Save user to the data base"""
+    DB.session.add(user)
     DB.session.commit()
 
 
-def remove_app(app):
-    """Delete an app"""
-    DB.session.delete(app)
+def remove_user(user):
+    """Delete an user"""
+    DB.session.delete(user)
     DB.session.commit()
 
 
-def get_user_app(name, key):
+def get_user(name, key):
     """Get application from credentials"""
-    user_app = UserApp.query.filter_by(app_name=name).first()
+    user = User.query.filter_by(username=name).first()
 
-    if user_app is not None and user_app.check_app_key(key):
-        return user_app
+    if user is not None and user.check_password(key):
+        return user
 
     return None
 

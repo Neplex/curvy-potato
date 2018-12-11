@@ -20,6 +20,9 @@ class Structure(DB.Model):
     structure_type = DB.Column(DB.String)
     geom = DB.Column(Geometry, nullable=False)
 
+    user_id = DB.Column(DB.Integer, DB.ForeignKey("user.id"))
+
+
     __mapper_args__ = {'polymorphic_on': structure_type}
 
     @property
