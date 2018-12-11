@@ -6,8 +6,8 @@ import click
 from flask.cli import AppGroup
 
 from app.app import DB, APP
-from app.model.user_app import UserApp
-from app.service.auth_service import generate_api_key, save_app, remove_app
+from app.model.user import User
+from app.service.auth_service import save_user, remove_user
 
 
 @APP.cli.command()
@@ -25,30 +25,27 @@ def database(option, force):
 
 
 # Command group for user app
-APP_GROUP = AppGroup("app", help="App management.")
+USER_GROUP = AppGroup("user", help="User management.")
 
 
-@APP_GROUP.command("add")
-@click.argument("app_name")
-def add_app(app_name):
-    """Add a new user app"""
-    api_key = generate_api_key()
-    user_app = UserApp(app_name=app_name, app_key=api_key)
-    save_app(user_app)
-    print("""
-    New app added:
-    name: %s
-    key: %s
-        (Warning, this key is private and cannot be restored)
-    """ % (app_name, api_key))
+@USER_GROUP.command("add")
+@click.argument("username")
+@click.argument("password")
+def add_user(username, password):
+    """Add a new user"""
+    user = User(username=username, password=password)
+    save_user(user)
+    print("""New user added:
+    username: %s
+    password: %s""" % (username, password))
 
 
-@APP_GROUP.command("delete")
-@click.argument("app_name")
-def delete_app(app_name):
-    """Delete an user app"""
-    remove_app(app_name)
+@USER_GROUP.command("delete")
+@click.argument("username")
+def delete_user(username):
+    """Delete an user"""
+    remove_user(username)
 
 
 # Add group to cli
-APP.cli.add_command(APP_GROUP)
+APP.cli.add_command(USER_GROUP)

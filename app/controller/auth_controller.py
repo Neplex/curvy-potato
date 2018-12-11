@@ -6,13 +6,13 @@ from flask_jwt_extended import jwt_required, create_access_token, get_raw_jwt
 from flask_restplus import Resource, Namespace, fields, abort
 
 from app.app import JWT_MANAGER
-from app.service.auth_service import get_user_app, revoke_jti, jti_is_revoked
+from app.service.auth_service import get_user, revoke_jti, jti_is_revoked
 
 API = Namespace('auth', description='authentication related operations')
 
 AUTH_MODEL = API.model('auth_details', {
-    'app_name': fields.String(required=True, description='Application name'),
-    'app_key': fields.String(required=True, description='Application key')
+    'username': fields.String(required=True, description='User name'),
+    'password': fields.String(required=True, description='User password')
 })
 
 JWT_MODEL = API.model('jwt_response', {
@@ -41,10 +41,10 @@ class Login(Resource):
     def post(self):
         """Generate a JWT"""
         data = API.payload
-        user_app = get_user_app(data['app_name'], data['app_key'])
+        user = get_user(data['username'], data['password'])
 
-        if user_app is not None:
-            access_token = create_access_token(identity=user_app.id)
+        if user is not None:
+            access_token = create_access_token(identity=user.id)
             return {'token': 'Bearer ' + access_token}
 
         return abort(401, 'Wrong credentials')
