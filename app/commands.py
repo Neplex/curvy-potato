@@ -25,10 +25,10 @@ def database(option, force):
 
 
 # Command group for user app
-APP_GROUP = AppGroup("user", help="User management.")
+USER_GROUP = AppGroup("user", help="User management.")
 
 
-@APP_GROUP.command("add")
+@USER_GROUP.command("add")
 @click.argument("username")
 @click.argument("password")
 def add_user(username, password):
@@ -40,7 +40,7 @@ def add_user(username, password):
     password: %s""" % (username, password))
 
 
-@APP_GROUP.command("delete")
+@USER_GROUP.command("delete")
 @click.argument("username")
 def delete_user(username):
     """Delete an user"""
@@ -48,4 +48,4 @@ def delete_user(username):
 
 
 # Add group to cli
-APP.cli.add_command(APP_GROUP)
+APP.cli.add_command(USER_GROUP)

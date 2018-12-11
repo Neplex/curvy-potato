@@ -7,12 +7,6 @@ from app.model.revoked_token import RevokedToken
 from app.model.user import User
 
 
-def generate_api_key():
-    """Generate a new api key"""
-    import uuid
-    return str(uuid.uuid4())
-
-
 def save_user(user):
     """Save user to the data base"""
     DB.session.add(user)
@@ -25,11 +19,11 @@ def remove_user(user):
     DB.session.commit()
 
 
-def get_user(name, key):
-    """Get application from credentials"""
-    user = User.query.filter_by(username=name).first()
+def get_user(username, password):
+    """Get user from credentials"""
+    user = User.query.filter_by(username=username).first()
 
-    if user is not None and user.check_password(key):
+    if user is not None and user.check_password(password):
         return user
 
     return None
