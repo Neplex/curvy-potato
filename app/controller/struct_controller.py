@@ -11,12 +11,12 @@ from app.model.structure import FitnessTrail, Hospital
 from app.service.struct_service import \
     get_all_structure, add_structure, get_structure, delete_structure
 
-API = Namespace('struct', description='structures related operations', path='/')
+API = Namespace('Structures', description='Structures related operations', path='/structures')
 
 # ==================================================================================================
 
 STRUCTURE_MODEL = API.model('structure', {
-    'id': fields.Integer(required=True, description='Structure identifier'),
+    'id': fields.Integer(required=False, description='Structure identifier'),
     'name': fields.String(required=True, description='Structure name'),
     'description': fields.String(required=False, description='Structure description'),
     'structure_type': fields.String(required=True, description='Structure type')
@@ -82,7 +82,7 @@ def structures_to_geojson(structure_list):
 # ==================================================================================================
 
 
-@API.route('/structures')
+@API.route('/')
 class StructureListController(Resource):
     """
     Show a list of all structure or add a new one
@@ -110,7 +110,7 @@ class StructureListController(Resource):
             'api.struct_structure_controller', structure_id=struct.id)}
 
 
-@API.route('/structures/<int:structure_id>')
+@API.route('/<int:structure_id>')
 @API.response(404, 'Structure not found')
 @API.param('structure_id', 'The structure identifier')
 class StructureController(Resource):

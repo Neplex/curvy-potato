@@ -8,7 +8,7 @@ from flask_restplus import Resource, Namespace, fields, abort
 from app.app import JWT_MANAGER
 from app.service.auth_service import get_user, revoke_jti, jti_is_revoked
 
-API = Namespace('auth', description='authentication related operations')
+API = Namespace('Authentication', description='Authentication related operations', path='/auth')
 
 AUTH_MODEL = API.model('auth_details', {
     'username': fields.String(required=True, description='User name'),

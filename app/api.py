@@ -19,9 +19,17 @@ AUTHORIZATIONS = {
 
 # Build API
 API_BLUEPRINT = Blueprint('api', __name__, url_prefix='/v1')
-API = Api(API_BLUEPRINT, title='Healthy API', version='1.0',
-          description='API for healthy app https://github.com/Neplex/healthy',
-          authorizations=AUTHORIZATIONS, security='JWT', validate=True)
+API = Api(
+    API_BLUEPRINT,
+    version='1.0',
+    title='Healthy API',
+    description='API for healthy app https://github.com/Neplex/healthy',
+    license='Apache-2.0',
+    license_url='https://www.apache.org/licenses/LICENSE-2.0',
+    authorizations=AUTHORIZATIONS,
+    security='JWT',
+    validate=True
+)
 
 # Add namespaces
 API.add_namespace(auth_ns)
