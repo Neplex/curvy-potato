@@ -6,6 +6,7 @@ import os
 
 from flask import Flask, redirect
 from flask_bcrypt import Bcrypt
+from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_sqlalchemy import SQLAlchemy
 
@@ -23,6 +24,7 @@ APP.config['SECRET_KEY'] = os.getenv('SECRET_KEY', os.urandom(24))
 DB = SQLAlchemy(APP)
 BCRYPT = Bcrypt(APP)
 JWT_MANAGER = JWTManager(APP)
+CORS(APP)
 
 
 @APP.route('/')
