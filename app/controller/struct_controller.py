@@ -22,8 +22,8 @@ STRUCTURE_MODEL = API.model('structure', {
     'id': fields.Integer(required=False, description='Structure identifier'),
     'name': fields.String(required=True, description='Structure name'),
     'description': fields.String(required=False, description='Structure description'),
-    'structure_type': fields.String(required=True, description='Structure type', 
-                                    enum=["fitness_trail","hospital"])
+    'structure_type': fields.String(required=True, description='Structure type',
+                                    enum=["fitness_trail", "hospital"])
 })
 
 FITNESS_TRAIL_MODEL = API.inherit('fitness trail', STRUCTURE_MODEL, {

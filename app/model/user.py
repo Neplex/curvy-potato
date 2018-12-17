@@ -21,7 +21,7 @@ class User(DB.Model):
 
     structures = DB.relationship('Structure', backref='user')
     favourites = DB.relationship('Structure', secondary=FAVOURITES,
-                              lazy=True, backref=DB.backref('favourites_of', lazy=True))
+                                 lazy=True, backref=DB.backref('favourites_of', lazy=True))
 
 
     @property
