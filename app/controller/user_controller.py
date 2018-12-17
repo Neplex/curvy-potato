@@ -5,7 +5,6 @@ User controller
 from flask_jwt_extended import jwt_required
 from flask_restplus import Resource, Namespace, fields
 from app.service.user_service import get_all_user, add_user, get_user, update_user, delete_user
-from app.controller.struct_controller import STRUCTURE_MODEL
 from app.model.user import User
 
 
@@ -15,8 +14,7 @@ USER_MODEL = API.model('user', {
     'id': fields.Integer(required=False, description='User identifier'),
     'username': fields.String(required=True, description='Username of the user'),
     'password_hash': fields.String(required=False, description='User password hash'),
-    'created_on': fields.DateTime(required=False, description='User creation date'),
-    'structures': fields.List(fields.Integer)
+    'created_on': fields.DateTime(required=False, description='User creation date')
 })
 
 USER_CREATE = API.model('user', {
@@ -35,14 +33,14 @@ class UserListController(Resource):
     Show a list of all users
     """
 
-    @API.doc('list_resources', security=None)
+    @API.doc('list_users', security=None)
     @API.marshal_with(USER_MODEL)
     def get(self):
         """List all users"""
         return get_all_user()
 
 
-    @API.doc('create_user')
+    @API.doc('create_user', security=None)
     @API.expect(USER_CREATE)
     @API.marshal_with(USER_CREATE, code=201)
     def post(self):

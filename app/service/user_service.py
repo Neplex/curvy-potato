@@ -2,6 +2,7 @@
 User service
 """
 
+
 from app.app import DB
 from app.model.user import User
 

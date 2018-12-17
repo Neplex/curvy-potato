@@ -12,6 +12,15 @@ def get_all_structure():
     """Get all structures."""
     return DB.session.query(with_polymorphic(Structure, '*'))
 
+def get_all_structure_by_user(user_id):
+    """Get all structures from user"""
+    return DB.session.query(with_polymorphic(Structure, '*')).filter(Structure.user_id == user_id)
+
+def get_favourites_by_user(user_id):
+    """Get all favourites of an user"""
+    return DB.session.query(with_polymorphic(Structure, '*')).filter(
+        Structure.favourites_of.any(id=user_id))
+
 
 def add_structure(struct):
     """Add a structure in the database."""
