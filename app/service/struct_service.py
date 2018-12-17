@@ -32,6 +32,11 @@ def get_structure(structure_id):
     """Get a structure from the DB given its identifier"""
     return Structure.query.get(structure_id)
 
+def update_structure(structure):
+    """Update a defined structure"""
+    DB.session.merge(structure)
+    DB.session.commit()
+
 
 def delete_structure(structure_id):
     """Delete a structure from the DB given its identifier"""

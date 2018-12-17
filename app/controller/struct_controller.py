@@ -10,7 +10,7 @@ from geojson import Point, LineString, dumps
 from app.model.structure import FitnessTrail, Hospital
 from app.service.struct_service import \
     get_all_structure, add_structure, get_structure, delete_structure, get_all_structure_by_user,\
-    get_favourites_by_user
+    get_favourites_by_user, update_structure
 
 from app.controller.user_controller import API as USER_API
 
@@ -145,7 +145,19 @@ class StructureController(Resource):
     @API.marshal_with(FEATURE_MODEL)
     def put(self, structure_id):
         """Update a structure given its identifier"""
-        # TODO: do something
+        props = API.payload['properties']
+        if props['structure_type'] == 'fitness_trail':
+            struct = FitnessTrail(id=structure_id, name=props['name'],
+                                  description=props['description'],
+                                  difficulty=props['difficulty'],
+                                  geometry=dumps(API.payload['geometry']),
+                                  user_id=get_jwt_identity())
+        elif props['structure_type'] == 'hospital':
+            struct = Hospital(id=structure_id, name=props['name'], description=props['description'],
+                              geometry=dumps(API.payload['geometry']), emergency=props['emergency'],
+                              maternity=props['maternity'], user_id=get_jwt_identity())
+        update_structure(struct)
+        return structure_to_geojson(struct)
 
     @jwt_required
     @API.doc('delete_structure')
