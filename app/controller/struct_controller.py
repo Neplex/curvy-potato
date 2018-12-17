@@ -5,7 +5,7 @@ Structure controller
 from flask import url_for
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_restplus import Resource, Namespace, fields, abort
-from geojson import Point, LineString
+from geojson import Point, LineString, dumps
 
 from app.model.structure import FitnessTrail, Hospital
 from app.service.struct_service import \
@@ -22,7 +22,8 @@ STRUCTURE_MODEL = API.model('structure', {
     'id': fields.Integer(required=False, description='Structure identifier'),
     'name': fields.String(required=True, description='Structure name'),
     'description': fields.String(required=False, description='Structure description'),
-    'structure_type': fields.String(required=True, description='Structure type')
+    'structure_type': fields.String(required=True, description='Structure type', 
+                                    enum=["fitness_trail","hospital"])
 })
 
 FITNESS_TRAIL_MODEL = API.inherit('fitness trail', STRUCTURE_MODEL, {
@@ -104,11 +105,16 @@ class StructureListController(Resource):
     @API.marshal_with(FEATURE_MODEL, code=201)
     def post(self):
         """Create a new structure"""
-        # data = API.payload
-        # TODO: check null element + convertion
-        struct = FitnessTrail(name="fitness trail", description="trail",
-                              difficulty=10, geom="LINESTRING(30 10, 20 20)",
-                              user_id=get_jwt_identity())
+        props = API.payload['properties']
+        if props['structure_type'] == 'fitness_trail':
+            struct = FitnessTrail(name=props['name'], description=props['description'],
+                                  difficulty=props['difficulty'],
+                                  geometry=dumps(API.payload['geometry']),
+                                  user_id=get_jwt_identity())
+        elif props['structure_type'] == 'hospital':
+            struct = Hospital(name=props['name'], description=props['description'],
+                              geometry=dumps(API.payload['geometry']), emergency=props['emergency'],
+                              maternity=props['maternity'], user_id=get_jwt_identity())
         add_structure(struct)
         return structure_to_geojson(struct), 201, {'Location': url_for(
             'api.Structures_structure_controller', structure_id=struct.id)}
