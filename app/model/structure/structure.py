@@ -30,5 +30,10 @@ class Structure(DB.Model):
         """Get geometry as geojson object"""
         return geojson.loads(DB.session.scalar(func.ST_AsGeoJSON(self.geom)))
 
+    @geometry.setter
+    def geometry(self, geometry):
+        print("taratata")
+        self.geom = func.ST_GeomFromGeoJSON(geometry)
+
     def __repr__(self):
         return '<%s %s>' % (self.__class__.__name__, self.name)

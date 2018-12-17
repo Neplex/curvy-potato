@@ -3,13 +3,16 @@ Structure controller
 """
 
 from flask import url_for
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_restplus import Resource, Namespace, fields, abort
-from geojson import Point, LineString
+from geojson import Point, LineString, dumps
 
 from app.model.structure import FitnessTrail, Hospital
 from app.service.struct_service import \
-    get_all_structure, add_structure, get_structure, delete_structure
+    get_all_structure, add_structure, get_structure, delete_structure, get_all_structure_by_user,\
+    get_favourites_by_user, update_structure
+
+from app.controller.user_controller import API as USER_API
 
 API = Namespace('Structures', description='Structures related operations', path='/structures')
 
@@ -19,7 +22,8 @@ STRUCTURE_MODEL = API.model('structure', {
     'id': fields.Integer(required=False, description='Structure identifier'),
     'name': fields.String(required=True, description='Structure name'),
     'description': fields.String(required=False, description='Structure description'),
-    'structure_type': fields.String(required=True, description='Structure type')
+    'structure_type': fields.String(required=True, description='Structure type',
+                                    enum=["fitness_trail", "hospital"])
 })
 
 FITNESS_TRAIL_MODEL = API.inherit('fitness trail', STRUCTURE_MODEL, {
@@ -82,7 +86,7 @@ def structures_to_geojson(structure_list):
 # ==================================================================================================
 
 
-@API.route('/')
+@API.route('')
 class StructureListController(Resource):
     """
     Show a list of all structure or add a new one
@@ -101,13 +105,19 @@ class StructureListController(Resource):
     @API.marshal_with(FEATURE_MODEL, code=201)
     def post(self):
         """Create a new structure"""
-        # data = API.payload
-        # TODO: check null element + convertion
-        struct = FitnessTrail(name="fitness trail", description="trail",
-                              difficulty=10, geom="LINESTRING(30 10, 20 20)")
+        props = API.payload['properties']
+        if props['structure_type'] == 'fitness_trail':
+            struct = FitnessTrail(name=props['name'], description=props['description'],
+                                  difficulty=props['difficulty'],
+                                  geometry=dumps(API.payload['geometry']),
+                                  user_id=get_jwt_identity())
+        elif props['structure_type'] == 'hospital':
+            struct = Hospital(name=props['name'], description=props['description'],
+                              geometry=dumps(API.payload['geometry']), emergency=props['emergency'],
+                              maternity=props['maternity'], user_id=get_jwt_identity())
         add_structure(struct)
         return structure_to_geojson(struct), 201, {'Location': url_for(
-            'api.struct_structure_controller', structure_id=struct.id)}
+            'api.Structures_structure_controller', structure_id=struct.id)}
 
 
 @API.route('/<int:structure_id>')
@@ -135,7 +145,19 @@ class StructureController(Resource):
     @API.marshal_with(FEATURE_MODEL)
     def put(self, structure_id):
         """Update a structure given its identifier"""
-        # TODO: do something
+        props = API.payload['properties']
+        if props['structure_type'] == 'fitness_trail':
+            struct = FitnessTrail(id=structure_id, name=props['name'],
+                                  description=props['description'],
+                                  difficulty=props['difficulty'],
+                                  geometry=dumps(API.payload['geometry']),
+                                  user_id=get_jwt_identity())
+        elif props['structure_type'] == 'hospital':
+            struct = Hospital(id=structure_id, name=props['name'], description=props['description'],
+                              geometry=dumps(API.payload['geometry']), emergency=props['emergency'],
+                              maternity=props['maternity'], user_id=get_jwt_identity())
+        update_structure(struct)
+        return structure_to_geojson(struct)
 
     @jwt_required
     @API.doc('delete_structure')
@@ -150,3 +172,28 @@ class StructureController(Resource):
     def not_found(structure_id):
         """Wrapper for not found error"""
         abort(404, "Structure %i doesn't exist" % structure_id)
+
+
+@USER_API.route('/<int:user_id>/structures')
+class StructureUserController(Resource):
+    """
+    Show a list of all structure from a user
+    """
+
+    @API.doc('list_resources_from_user', security=None)
+    @API.marshal_with(FEATURE_COLLECTION_MODEL)
+    def get(self, user_id):
+        """List all structures of an user"""
+        return structures_to_geojson(get_all_structure_by_user(user_id))
+
+@USER_API.route('/<int:user_id>/favourites')
+class FavorisUserController(Resource):
+    """
+    Show a list of all structure from a user
+    """
+
+    @API.doc('list_favourites_of_user', security=None)
+    @API.marshal_with(FEATURE_COLLECTION_MODEL)
+    def get(self, user_id):
+        """List all favourites of an user"""
+        return structures_to_geojson(get_favourites_by_user(user_id))
