@@ -9,10 +9,7 @@ from geojson import Point, LineString, dumps
 
 from app.model.structure import FitnessTrail, Hospital
 from app.service.struct_service import \
-    get_all_structure, add_structure, get_structure, delete_structure, get_all_structure_by_user,\
-    get_favourites_by_user, update_structure
-
-from app.controller.user_controller import API as USER_API
+    get_all_structure, add_structure, get_structure, delete_structure, update_structure
 
 API = Namespace('Structures', description='Structures related operations', path='/structures')
 
@@ -96,7 +93,6 @@ class StructureListController(Resource):
     @API.marshal_with(FEATURE_COLLECTION_MODEL)
     def get(self):
         """List all structures"""
-        # TODO: return urls or object ?
         return structures_to_geojson(get_all_structure())
 
     @jwt_required
@@ -172,28 +168,3 @@ class StructureController(Resource):
     def not_found(structure_id):
         """Wrapper for not found error"""
         abort(404, "Structure %i doesn't exist" % structure_id)
-
-
-@USER_API.route('/<int:user_id>/structures')
-class StructureUserController(Resource):
-    """
-    Show a list of all structure from a user
-    """
-
-    @API.doc('list_resources_from_user', security=None)
-    @API.marshal_with(FEATURE_COLLECTION_MODEL)
-    def get(self, user_id):
-        """List all structures of an user"""
-        return structures_to_geojson(get_all_structure_by_user(user_id))
-
-@USER_API.route('/<int:user_id>/favourites')
-class FavorisUserController(Resource):
-    """
-    Show a list of all structure from a user
-    """
-
-    @API.doc('list_favourites_of_user', security=None)
-    @API.marshal_with(FEATURE_COLLECTION_MODEL)
-    def get(self, user_id):
-        """List all favourites of an user"""
-        return structures_to_geojson(get_favourites_by_user(user_id))
