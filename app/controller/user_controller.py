@@ -9,7 +9,7 @@ from app.controller.struct_controller import FEATURE_COLLECTION_MODEL, structure
 from app.model.user import User
 from app.service.user_service import \
     get_all_user, add_user, get_user, update_user, delete_user, \
-    get_favourites_by_user, get_all_structure_by_user
+    get_favorites_by_user, get_all_structure_by_user
 
 API = Namespace('User', description='User related operations', path='/users')
 
@@ -110,8 +110,13 @@ class FavoritesUserController(Resource):
     Show a list of all structure from a user
     """
 
-    @API.doc('list_favourites_of_user', security=None)
+    @API.doc('list_favorites_of_user', security=None)
     @API.marshal_with(FEATURE_COLLECTION_MODEL)
     def get(self, user_id):
-        """List all favourites of an user"""
-        return structures_to_geojson(get_favourites_by_user(user_id))
+        """List all favorites of an user"""
+        return structures_to_geojson(get_favorites_by_user(user_id))
+
+    @API.doc('list_favorites_of_user', security=None)
+    def post(self, user_id):
+        """Add a new favorite for user"""
+

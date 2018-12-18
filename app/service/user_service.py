@@ -44,7 +44,7 @@ def get_all_structure_by_user(user_id):
     return DB.session.query(with_polymorphic(Structure, '*')).filter(Structure.user_id == user_id)
 
 
-def get_favourites_by_user(user_id):
-    """Get all favourites of an user"""
+def get_favorites_by_user(user_id):
+    """Get all favorites of an user"""
     return DB.session.query(with_polymorphic(Structure, '*')).filter(
-        Structure.favourites_of.any(id=user_id))
+        Structure.favorites_of.any(id=user_id))

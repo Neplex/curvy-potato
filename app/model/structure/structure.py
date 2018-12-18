@@ -32,7 +32,6 @@ class Structure(DB.Model):
 
     @geometry.setter
     def geometry(self, geometry):
-        print("taratata")
         self.geom = func.ST_GeomFromGeoJSON(geometry)
 
     def __repr__(self):
