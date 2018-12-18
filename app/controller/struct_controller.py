@@ -5,37 +5,46 @@ Structure controller
 from flask import url_for
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_restplus import Resource, Namespace, fields, abort
-from geojson import Point, LineString, dumps
+from geojson import Point, LineString
 
-from app.model.structure import FitnessTrail, Hospital
-from app.service.struct_service import \
-    get_all_structure, add_structure, get_structure, delete_structure, update_structure
+from app.service.struct_service import *
 
 API = Namespace('Structures', description='Structures related operations', path='/structures')
 
 # ==================================================================================================
 
 STRUCTURE_MODEL = API.model('structure', {
-    'id': fields.Integer(required=False, description='Structure identifier'),
+    'id': fields.Integer(required=False, readonly=True, description='Structure identifier'),
     'name': fields.String(required=True, description='Structure name'),
     'description': fields.String(required=False, description='Structure description'),
-    'structure_type': fields.String(required=True, description='Structure type',
-                                    enum=["fitness_trail", "hospital"])
+    'structure_type': fields.String(required=True, description='Structure type', attribute='type',
+                                    enum=[x.value for x in StructureType])
 })
 
-FITNESS_TRAIL_MODEL = API.inherit('fitness trail', STRUCTURE_MODEL, {
+FITNESS_TRAIL_MODEL = API.inherit(StructureType.FITNESS_TRAIL.value, STRUCTURE_MODEL, {
     'difficulty': fields.Integer(required=True)
 })
 
-HOSPITAL_MODEL = API.inherit('hospital', STRUCTURE_MODEL, {
+HOSPITAL_MODEL = API.inherit(StructureType.HOSPITAL.value, STRUCTURE_MODEL, {
     'emergency': fields.Boolean(required=True),
-    'maternity': fields.Boolean(required=True)
+    'maternity': fields.Boolean(required=True),
+    'phone': fields.String(required=True)
+})
+
+MEDICAL_OFFICE_MODEL = API.inherit(StructureType.MEDICAL_OFFICE.value, STRUCTURE_MODEL, {
+    'phone': fields.String(required=True),
+    'specialities': fields.List(fields.String(), required=True)
+})
+
+GYM_MODEL = API.inherit(StructureType.GYM.value, STRUCTURE_MODEL, {
+    'phone': fields.String(required=True),
+    'price': fields.Integer(required=True)
 })
 
 # ===
 
 GEOMETRY_MODEL = API.model('GeoJSON geometry', {
-    'type': fields.String(required=True),
+    'type': fields.String(required=True, enum=['Point', 'LineString']),
 })
 
 POINT_MODEL = API.inherit('GeoJSON point', GEOMETRY_MODEL, {
@@ -49,11 +58,11 @@ LINESTRING_MODEL = API.inherit('GeoJSON linestring', GEOMETRY_MODEL, {
 # ===
 
 FEATURE_MODEL = API.model('GeoJSON feature', {
-    'type': fields.String(default='Feature'),
+    'type': fields.String(enum=['Feature']),
     'geometry': fields.Polymorph({
         Point: POINT_MODEL,
         LineString: LINESTRING_MODEL
-    }),
+    }, example=Point()),
     'properties': fields.Polymorph({
         FitnessTrail: FITNESS_TRAIL_MODEL,
         Hospital: HOSPITAL_MODEL
@@ -61,23 +70,9 @@ FEATURE_MODEL = API.model('GeoJSON feature', {
 })
 
 FEATURE_COLLECTION_MODEL = API.model('GeoJSON feature collection', {
-    'type': fields.String(default='FeatureCollection'),
+    'type': fields.String(enum=['FeatureCollection']),
     'features': fields.List(fields.Nested(FEATURE_MODEL))
 })
-
-
-# ==================================================================================================
-
-
-def structure_to_geojson(structure):
-    """Convert structure object to geojson"""
-    return {'properties': structure, 'geometry': structure.geometry}
-
-
-def structures_to_geojson(structure_list):
-    """Convert structure list to geojson"""
-    return {'features': [structure_to_geojson(
-        structure) for structure in structure_list]}
 
 
 # ==================================================================================================
@@ -101,19 +96,10 @@ class StructureListController(Resource):
     @API.marshal_with(FEATURE_MODEL, code=201)
     def post(self):
         """Create a new structure"""
-        props = API.payload['properties']
-        if props['structure_type'] == 'fitness_trail':
-            struct = FitnessTrail(name=props['name'], description=props['description'],
-                                  difficulty=props['difficulty'],
-                                  geometry=dumps(API.payload['geometry']),
-                                  user_id=get_jwt_identity())
-        elif props['structure_type'] == 'hospital':
-            struct = Hospital(name=props['name'], description=props['description'],
-                              geometry=dumps(API.payload['geometry']), emergency=props['emergency'],
-                              maternity=props['maternity'], user_id=get_jwt_identity())
-        add_structure(struct)
-        return structure_to_geojson(struct), 201, {'Location': url_for(
-            'api.Structures_structure_controller', structure_id=struct.id)}
+        structure = geojson_to_structure(API.payload, None, get_jwt_identity())
+        add_structure(structure)
+        return structure_to_geojson(structure), 201, {'Location': url_for(
+            'api.Structures_structure_controller', structure_id=structure.id)}
 
 
 @API.route('/<int:structure_id>')
@@ -128,12 +114,12 @@ class StructureController(Resource):
     @API.marshal_with(FEATURE_MODEL)
     def get(self, structure_id):
         """Get the resource"""
-        struct = get_structure(structure_id)
+        structure = get_structure(structure_id)
 
-        if struct is None:
+        if structure is None:
             self.not_found(structure_id)
 
-        return structure_to_geojson(struct)
+        return structure_to_geojson(structure)
 
     @jwt_required
     @API.doc('update_structure')
@@ -141,19 +127,9 @@ class StructureController(Resource):
     @API.marshal_with(FEATURE_MODEL)
     def put(self, structure_id):
         """Update a structure given its identifier"""
-        props = API.payload['properties']
-        if props['structure_type'] == 'fitness_trail':
-            struct = FitnessTrail(id=structure_id, name=props['name'],
-                                  description=props['description'],
-                                  difficulty=props['difficulty'],
-                                  geometry=dumps(API.payload['geometry']),
-                                  user_id=get_jwt_identity())
-        elif props['structure_type'] == 'hospital':
-            struct = Hospital(id=structure_id, name=props['name'], description=props['description'],
-                              geometry=dumps(API.payload['geometry']), emergency=props['emergency'],
-                              maternity=props['maternity'], user_id=get_jwt_identity())
-        update_structure(struct)
-        return structure_to_geojson(struct)
+        structure = geojson_to_structure(API.payload, structure_id, get_jwt_identity())
+        update_structure(structure)
+        return structure_to_geojson(structure)
 
     @jwt_required
     @API.doc('delete_structure')
