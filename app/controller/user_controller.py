@@ -9,7 +9,7 @@ from app.controller.struct_controller import FEATURE_COLLECTION_MODEL, structure
 from app.model.user import User
 from app.service.user_service import \
     get_all_user, add_user, get_user, update_user, delete_user, \
-    get_favorites_by_user, get_all_structure_by_user
+    get_favorites_by_user, get_all_structure_by_user, add_favorite_to_user
 
 API = Namespace('User', description='User related operations', path='/users')
 
@@ -22,6 +22,11 @@ USER_MODEL = API.model('user', {
 USER_PASSWORD_MODEL = API.model('user_password', {
     'username': fields.String(required=True, description='Username of the user'),
     'password': fields.String(required=True, description='User password'),
+})
+
+FAVORITE_MODEL = API.model('favorite', {
+    'user_id': fields.Integer(required=False, description='User identifier'),
+    'structure_id': fields.Integer(required=True, description='Structure identifier')
 })
 
 
@@ -94,7 +99,7 @@ class UserController(Resource):
 @API.route('/<int:user_id>/structures')
 class StructureUserController(Resource):
     """
-    Show a list of all structure from a user
+    Show a list of all structures from a user
     """
 
     @API.doc('list_resources_from_user', security=None)
@@ -107,7 +112,7 @@ class StructureUserController(Resource):
 @API.route('/<int:user_id>/favorites')
 class FavoritesUserController(Resource):
     """
-    Show a list of all structure from a user
+    Show a list of all favorites of a user
     """
 
     @API.doc('list_favorites_of_user', security=None)
@@ -116,7 +121,10 @@ class FavoritesUserController(Resource):
         """List all favorites of an user"""
         return structures_to_geojson(get_favorites_by_user(user_id))
 
-    @API.doc('list_favorites_of_user', security=None)
+    @API.doc('add_favorite_to_user', security=None)
+    @API.expect(FAVORITE_MODEL)
+    @API.marshal_with(FEATURE_COLLECTION_MODEL)
     def post(self, user_id):
         """Add a new favorite for user"""
-
+        add_favorite_to_user(user_id, API.payload['structure_id'])
+        return structures_to_geojson(get_favorites_by_user(user_id))

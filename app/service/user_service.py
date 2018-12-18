@@ -7,6 +7,7 @@ from sqlalchemy.orm import with_polymorphic
 from app.app import DB
 from app.model.structure import Structure
 from app.model.user import User
+from app.service.struct_service import get_structure
 
 
 def get_all_user():
@@ -48,3 +49,11 @@ def get_favorites_by_user(user_id):
     """Get all favorites of an user"""
     return DB.session.query(with_polymorphic(Structure, '*')).filter(
         Structure.favorites_of.any(id=user_id))
+
+def add_favorite_to_user(user_id, structure_id):
+    """Add a favorite to a defined user"""
+    user = get_user(user_id)
+    struct = get_structure(structure_id)
+    user.favorites.append(struct)
+    #DB.session.merge(user)
+    DB.session.commit()
