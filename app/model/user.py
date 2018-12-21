@@ -5,10 +5,10 @@ from datetime import datetime
 
 from app.app import DB, BCRYPT
 
-FAVOURITES = DB.Table('favourites',
-                      DB.Column('user_id', DB.Integer, DB.ForeignKey('user.id'), primary_key=True),
-                      DB.Column('structure_id', DB.Integer, DB.ForeignKey('structure.id'),
-                                primary_key=True))
+FAVORITES = DB.Table('favorites',
+                     DB.Column('user_id', DB.Integer, DB.ForeignKey('user.id'), primary_key=True),
+                     DB.Column('structure_id', DB.Integer, DB.ForeignKey('structure.id'),
+                               primary_key=True))
 
 
 class User(DB.Model):
@@ -20,8 +20,9 @@ class User(DB.Model):
     created_on = DB.Column(DB.DateTime, nullable=False, default=datetime.now)
 
     structures = DB.relationship('Structure', backref='user')
-    favourites = DB.relationship('Structure', secondary=FAVOURITES,
-                                 lazy=True, backref=DB.backref('favourites_of', lazy=True))
+    favorites = DB.relationship('Structure', secondary=FAVORITES,
+                                lazy=True, backref=DB.backref('favorites_of', lazy=True)
+                                )
 
 
     @property
