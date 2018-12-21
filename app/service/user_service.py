@@ -55,5 +55,12 @@ def add_favorite_to_user(user_id, structure_id):
     user = get_user(user_id)
     struct = get_structure(structure_id)
     user.favorites.append(struct)
-    #DB.session.merge(user)
     DB.session.commit()
+
+def delete_favorite(user_id, favorite_id):
+    """Delete a favorite for an user"""
+    user = get_user(user_id)
+    struct = get_structure(favorite_id)
+    user.favorites.remove(struct)
+    DB.session.commit()
+    

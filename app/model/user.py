@@ -6,9 +6,9 @@ from datetime import datetime
 from app.app import DB, BCRYPT
 
 FAVORITES = DB.Table('favorites',
-                      DB.Column('user_id', DB.Integer, DB.ForeignKey('user.id'), primary_key=True),
-                      DB.Column('structure_id', DB.Integer, DB.ForeignKey('structure.id'),
-                                primary_key=True))
+                     DB.Column('user_id', DB.Integer, DB.ForeignKey('user.id'), primary_key=True),
+                     DB.Column('structure_id', DB.Integer, DB.ForeignKey('structure.id'),
+                               primary_key=True))
 
 
 class User(DB.Model):
@@ -21,7 +21,8 @@ class User(DB.Model):
 
     structures = DB.relationship('Structure', backref='user')
     favorites = DB.relationship('Structure', secondary=FAVORITES,
-                                 lazy=True, backref=DB.backref('favorites_of', lazy=True))
+                                lazy=True, backref=DB.backref('favorites_of', lazy=True)
+                                )
 
 
     @property
