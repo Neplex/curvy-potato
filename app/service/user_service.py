@@ -50,17 +50,18 @@ def get_favorites_by_user(user_id):
     return DB.session.query(with_polymorphic(Structure, '*')).filter(
         Structure.favorites_of.any(id=user_id))
 
+
 def add_favorite_to_user(user_id, structure_id):
     """Add a favorite to a defined user"""
     user = get_user(user_id)
-    struct = get_structure(structure_id)
-    user.favorites.append(struct)
+    structure = get_structure(structure_id)
+    user.favorites.append(structure)
     DB.session.commit()
+
 
 def delete_favorite(user_id, favorite_id):
     """Delete a favorite for an user"""
     user = get_user(user_id)
-    struct = get_structure(favorite_id)
-    user.favorites.remove(struct)
+    structure = get_structure(favorite_id)
+    user.favorites.remove(structure)
     DB.session.commit()
-    
