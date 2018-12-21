@@ -35,15 +35,17 @@ class Structure(DB.Model):
 
     @property
     def geometry(self):
-        """Get geometry as geojson object"""
+        """Get geometry as GeoJSON object"""
         return geojson.loads(DB.session.scalar(func.ST_AsGeoJSON(self.geom)))
 
     @geometry.setter
     def geometry(self, geometry):
+        """Set geometry from GeoJSON object"""
         self.geom = func.ST_GeomFromGeoJSON(geometry)
 
     @property
     def type(self):
+        """Get structure type as string"""
         return self.structure_type.value
 
     def __repr__(self):

@@ -6,9 +6,8 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_restplus import Resource, Namespace, fields, abort
 
 import app.service.user_service as user_service
-from app.model.user import User
-from app.controller.struct_controller import FEATURE_COLLECTION_MODEL
-from app.service.struct_service import structures_to_geojson
+from app.controller.struct_controller import FEATURE_COLLECTION_MODEL, FEATURE_MODEL
+from app.service.struct_service import structures_to_geojson, get_structure
 
 API = Namespace('User', description='User related operations', path='/users')
 
@@ -24,7 +23,6 @@ USER_PASSWORD_MODEL = API.model('user_password', {
 })
 
 FAVORITE_MODEL = API.model('favorite', {
-    'user_id': fields.Integer(required=False, description='User identifier'),
     'structure_id': fields.Integer(required=True, description='Structure identifier')
 })
 
@@ -125,16 +123,18 @@ class FavoritesUserController(Resource):
     @API.marshal_with(FEATURE_COLLECTION_MODEL)
     def get(self, user_id):
         """List all favorites of an user"""
-        return structures_to_geojson(user_service.get_favourites_by_user(user_id))
+        return structures_to_geojson(user_service.get_favorites_by_user(user_id))
 
     @jwt_required
     @API.doc('add_favorite_to_user', security=None)
     @API.expect(FAVORITE_MODEL)
-    @API.marshal_with(FEATURE_COLLECTION_MODEL)
+    @API.marshal_with(FEATURE_MODEL)
     def post(self, user_id):
         """Add a new favorite for user"""
-        add_favorite_to_user(user_id, API.payload['structure_id'])
-        return structures_to_geojson(get_favorites_by_user(user_id))
+        structure_id = API.payload['structure_id']
+        user_service.add_favorite_to_user(user_id, structure_id)
+        return structures_to_geojson(get_structure(structure_id))
+
 
 @API.route('/<int:user_id>/favorites/<int:favorite_id>')
 class FavoriteUserDeleteController(Resource):

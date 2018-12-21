@@ -7,7 +7,9 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_restplus import Resource, Namespace, fields, abort
 from geojson import Point, LineString
 
-from app.service.struct_service import *
+from app.model.structure import StructureType, MedicalOffice, FitnessTrail, Hospital, Gym
+from app.service.struct_service import get_structure, structure_to_geojson, geojson_to_structure, \
+    update_structure, delete_structure, add_structure, structures_to_geojson, get_all_structure
 
 API = Namespace('Structures', description='Structures related operations', path='/structures')
 
@@ -64,8 +66,10 @@ FEATURE_MODEL = API.model('GeoJSON feature', {
         LineString: LINESTRING_MODEL
     }, example=Point()),
     'properties': fields.Polymorph({
+        MedicalOffice: MEDICAL_OFFICE_MODEL,
         FitnessTrail: FITNESS_TRAIL_MODEL,
-        Hospital: HOSPITAL_MODEL
+        Hospital: HOSPITAL_MODEL,
+        Gym: GYM_MODEL
     })
 })
 

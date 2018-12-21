@@ -6,7 +6,8 @@ from geojson import dumps, Feature, FeatureCollection
 from sqlalchemy.orm import with_polymorphic
 
 from app.app import DB
-from app.model.structure import *
+from app.model.structure import StructureType, Structure, \
+    MedicalOffice, FitnessTrail, Hospital, Gym
 
 
 def get_all_structure():
