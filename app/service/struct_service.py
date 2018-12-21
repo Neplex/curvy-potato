@@ -10,9 +10,32 @@ from app.model.structure import StructureType, Structure, \
     MedicalOffice, FitnessTrail, Hospital, Gym
 
 
-def get_all_structure():
+def get_all_structure(query=None, bounds=None):
     """Get all structures."""
-    return DB.session.query(with_polymorphic(Structure, '*'))
+
+    result = DB.session.query(with_polymorphic(Structure, '*'))
+
+    if query is not None:
+        query = str(query)
+        result = result.filter(Structure.name.contains(query) | Structure.description.contains(query))
+
+    if bounds is not None:
+        bbox = 'POLYGON(' + ','.join(' '.join(x) for x in bounds) + ')'
+        print(bbox)
+        result = result.filter(Structure.geom.within(bbox))
+
+    return result
+
+
+def get_all_structure_by_user(user_id):
+    """Get all structures from user"""
+    return DB.session.query(with_polymorphic(Structure, '*')).filter(Structure.user_id == user_id)
+
+
+def get_favourites_by_user(user_id):
+    """Get all favourites of an user"""
+    return DB.session.query(with_polymorphic(Structure, '*')).filter(
+        Structure.favourites_of.any(id=user_id))
 
 
 def add_structure(struct):

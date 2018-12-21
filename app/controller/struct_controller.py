@@ -78,6 +78,10 @@ FEATURE_COLLECTION_MODEL = API.model('GeoJSON feature collection', {
     'features': fields.List(fields.Nested(FEATURE_MODEL))
 })
 
+STRUCTURE_LIST_OPTIONS = API.parser()
+STRUCTURE_LIST_OPTIONS.add_argument('query', type=str, trim=True)
+STRUCTURE_LIST_OPTIONS.add_argument('bounds', type=list)
+
 
 # ==================================================================================================
 
@@ -89,10 +93,12 @@ class StructureListController(Resource):
     """
 
     @API.doc('list_resources', security=None)
+    @API.expect(STRUCTURE_LIST_OPTIONS)
     @API.marshal_with(FEATURE_COLLECTION_MODEL)
     def get(self):
         """List all structures"""
-        return structures_to_geojson(get_all_structure())
+        args = STRUCTURE_LIST_OPTIONS.parse_args()
+        return structures_to_geojson(get_all_structure(**args))
 
     @jwt_required
     @API.doc('create_structure')
