@@ -24,7 +24,7 @@ STRUCTURE_MODEL = API.model('structure', {
 })
 
 FITNESS_TRAIL_MODEL = API.inherit(StructureType.FITNESS_TRAIL.value, STRUCTURE_MODEL, {
-    'difficulty': fields.Integer(required=True)
+    'difficulty': fields.Integer(required=True, min=0)
 })
 
 HOSPITAL_MODEL = API.inherit(StructureType.HOSPITAL.value, STRUCTURE_MODEL, {
@@ -40,7 +40,7 @@ MEDICAL_OFFICE_MODEL = API.inherit(StructureType.MEDICAL_OFFICE.value, STRUCTURE
 
 GYM_MODEL = API.inherit(StructureType.GYM.value, STRUCTURE_MODEL, {
     'phone': fields.String(required=True),
-    'price': fields.Integer(required=True)
+    'price': fields.Float(required=True)
 })
 
 # ===
@@ -50,11 +50,11 @@ GEOMETRY_MODEL = API.model('GeoJSON geometry', {
 })
 
 POINT_MODEL = API.inherit('GeoJSON point', GEOMETRY_MODEL, {
-    'coordinates': fields.List(fields.Integer())
+    'coordinates': fields.List(fields.Float)
 })
 
 LINESTRING_MODEL = API.inherit('GeoJSON linestring', GEOMETRY_MODEL, {
-    'coordinates': fields.List(fields.List(fields.Integer()))
+    'coordinates': fields.List(fields.List(fields.Float))
 })
 
 # ===
@@ -64,7 +64,7 @@ FEATURE_MODEL = API.model('GeoJSON feature', {
     'geometry': fields.Polymorph({
         Point: POINT_MODEL,
         LineString: LINESTRING_MODEL
-    }, example=Point()),
+    }, example=Point((0, 0))),
     'properties': fields.Polymorph({
         MedicalOffice: MEDICAL_OFFICE_MODEL,
         FitnessTrail: FITNESS_TRAIL_MODEL,
@@ -78,9 +78,11 @@ FEATURE_COLLECTION_MODEL = API.model('GeoJSON feature collection', {
     'features': fields.List(fields.Nested(FEATURE_MODEL))
 })
 
+# ===
+
 STRUCTURE_LIST_OPTIONS = API.parser()
 STRUCTURE_LIST_OPTIONS.add_argument('query', type=str, trim=True)
-STRUCTURE_LIST_OPTIONS.add_argument('bounds', type=list)
+STRUCTURE_LIST_OPTIONS.add_argument('bounds', type=float, action='split')
 
 
 # ==================================================================================================

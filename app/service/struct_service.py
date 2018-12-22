@@ -3,6 +3,7 @@ Structure service
 """
 
 from geojson import dumps, Feature, FeatureCollection
+from sqlalchemy import func
 from sqlalchemy.orm import with_polymorphic
 
 from app.app import DB
@@ -17,12 +18,20 @@ def get_all_structure(query=None, bounds=None):
 
     if query is not None:
         query = str(query)
-        result = result.filter(Structure.name.contains(query) | Structure.description.contains(query))
+        result = result.filter(
+            Structure.name.contains(query) |
+            Structure.description.contains(query)
+        )
 
-    if bounds is not None:
-        bbox = 'POLYGON(' + ','.join(' '.join(x) for x in bounds) + ')'
-        print(bbox)
-        result = result.filter(Structure.geom.within(bbox))
+    if bounds is not None and len(bounds) == 4:
+        bbox = ('POLYGON((' + ', '.join(['{} {}'] * 5) + '))').format(
+            bounds[0], bounds[1],
+            bounds[2], bounds[1],
+            bounds[2], bounds[3],
+            bounds[0], bounds[3],
+            bounds[0], bounds[1]
+        )
+        result = result.filter(func.ST_Within(Structure.geom, func.ST_GeomFromText(bbox)))
 
     return result
 

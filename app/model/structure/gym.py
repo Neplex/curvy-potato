@@ -11,6 +11,6 @@ class Gym(Structure):
 
     id = DB.Column(DB.Integer, DB.ForeignKey('structure.id'), primary_key=True)
     phone = DB.Column(DB.String)
-    price = DB.Column(DB.Integer)
+    price = DB.Column(DB.Float)
 
     __mapper_args__ = {'polymorphic_identity': StructureType.GYM}
