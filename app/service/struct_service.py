@@ -73,9 +73,9 @@ def delete_structure(structure_id):
         DB.session.commit()
 
 
-def structure_to_geojson(structure):
+def structure_to_geojson(structure, extras=None):
     """Convert structure object to geojson"""
-    return Feature(None, structure.geometry, structure)
+    return Feature(None, structure.geometry, structure, **(extras or {}))
 
 
 def structures_to_geojson(structure_list):

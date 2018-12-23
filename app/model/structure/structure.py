@@ -48,5 +48,21 @@ class Structure(DB.Model):
         """Get structure type as string"""
         return self.structure_type.value
 
+    def get_distance_from(self, target):
+        """Get the distance between the structure and a target"""
+        dist = None
+
+        if target is not None:
+            if target is list:
+                point = 'POINT({} {})'.format(*target)
+                geom = func.ST_GeomFromText(point)
+
+            else:
+                geom = target.geom
+
+            dist = DB.session.scalar(func.ST_Distance(self.geom, geom))
+
+        return dist
+
     def __repr__(self):
         return '<%s %s>' % (self.__class__.__name__, self.name)

@@ -70,7 +70,8 @@ FEATURE_MODEL = API.model('GeoJSON feature', {
         FitnessTrail: FITNESS_TRAIL_MODEL,
         Hospital: HOSPITAL_MODEL,
         Gym: GYM_MODEL
-    })
+    }),
+    'distance': fields.Float(required=False, readonly=True, description='Distance to the structure')
 })
 
 FEATURE_COLLECTION_MODEL = API.model('GeoJSON feature collection', {
@@ -83,6 +84,9 @@ FEATURE_COLLECTION_MODEL = API.model('GeoJSON feature collection', {
 STRUCTURE_LIST_OPTIONS = API.parser()
 STRUCTURE_LIST_OPTIONS.add_argument('query', type=str, trim=True)
 STRUCTURE_LIST_OPTIONS.add_argument('bounds', type=float, action='split')
+
+STRUCTURE_OPTIONS = API.parser()
+STRUCTURE_OPTIONS.add_argument('distanceFrom', type=float, action='split')
 
 
 # ==================================================================================================
@@ -123,20 +127,24 @@ class StructureController(Resource):
     """
 
     @API.doc('get_structure', security=None)
-    @API.marshal_with(FEATURE_MODEL)
+    @API.expect(STRUCTURE_OPTIONS)
+    @API.marshal_with(FEATURE_MODEL, skip_none=True)
     def get(self, structure_id):
         """Get the resource"""
+        args = STRUCTURE_OPTIONS.parse_args()
         structure = get_structure(structure_id)
 
         if structure is None:
             self.not_found(structure_id)
 
-        return structure_to_geojson(structure)
+        return structure_to_geojson(structure, {
+            'distance': structure.get_distance_from(args['distanceFrom'])
+        })
 
     @jwt_required
     @API.doc('update_structure')
     @API.expect(FEATURE_MODEL)
-    @API.marshal_with(FEATURE_MODEL)
+    @API.marshal_with(FEATURE_MODEL, skip_none=True)
     def put(self, structure_id):
         """Update a structure given its identifier"""
         structure = geojson_to_structure(API.payload, structure_id, get_jwt_identity())
