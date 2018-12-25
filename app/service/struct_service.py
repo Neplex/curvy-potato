@@ -3,6 +3,7 @@ Structure service
 """
 
 from geojson import dumps, Feature, FeatureCollection
+from sqlalchemy import func
 from sqlalchemy.orm import with_polymorphic
 
 from app.app import DB
@@ -10,9 +11,40 @@ from app.model.structure import StructureType, Structure, \
     MedicalOffice, FitnessTrail, Hospital, Gym
 
 
-def get_all_structure():
+def get_all_structure(query=None, bounds=None):
     """Get all structures."""
-    return DB.session.query(with_polymorphic(Structure, '*'))
+
+    result = DB.session.query(with_polymorphic(Structure, '*'))
+
+    if query is not None:
+        query = str(query)
+        result = result.filter(
+            Structure.name.contains(query) |
+            Structure.description.contains(query)
+        )
+
+    if bounds is not None and len(bounds) == 4:
+        bbox = ('POLYGON((' + ', '.join(['{} {}'] * 5) + '))').format(
+            bounds[0], bounds[1],
+            bounds[2], bounds[1],
+            bounds[2], bounds[3],
+            bounds[0], bounds[3],
+            bounds[0], bounds[1]
+        )
+        result = result.filter(func.ST_Within(Structure.geom, func.ST_GeomFromText(bbox)))
+
+    return result
+
+
+def get_all_structure_by_user(user_id):
+    """Get all structures from user"""
+    return DB.session.query(with_polymorphic(Structure, '*')).filter(Structure.user_id == user_id)
+
+
+def get_favourites_by_user(user_id):
+    """Get all favourites of an user"""
+    return DB.session.query(with_polymorphic(Structure, '*')).filter(
+        Structure.favourites_of.any(id=user_id))
 
 
 def add_structure(struct):
@@ -41,9 +73,9 @@ def delete_structure(structure_id):
         DB.session.commit()
 
 
-def structure_to_geojson(structure):
+def structure_to_geojson(structure, extras=None):
     """Convert structure object to geojson"""
-    return Feature(None, structure.geometry, structure)
+    return Feature(None, structure.geometry, structure, **(extras or {}))
 
 
 def structures_to_geojson(structure_list):

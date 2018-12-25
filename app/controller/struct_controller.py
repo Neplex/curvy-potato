@@ -24,7 +24,7 @@ STRUCTURE_MODEL = API.model('structure', {
 })
 
 FITNESS_TRAIL_MODEL = API.inherit(StructureType.FITNESS_TRAIL.value, STRUCTURE_MODEL, {
-    'difficulty': fields.Integer(required=True)
+    'difficulty': fields.Integer(required=True, min=0)
 })
 
 HOSPITAL_MODEL = API.inherit(StructureType.HOSPITAL.value, STRUCTURE_MODEL, {
@@ -40,7 +40,7 @@ MEDICAL_OFFICE_MODEL = API.inherit(StructureType.MEDICAL_OFFICE.value, STRUCTURE
 
 GYM_MODEL = API.inherit(StructureType.GYM.value, STRUCTURE_MODEL, {
     'phone': fields.String(required=True),
-    'price': fields.Integer(required=True)
+    'price': fields.Float(required=True)
 })
 
 # ===
@@ -50,11 +50,11 @@ GEOMETRY_MODEL = API.model('GeoJSON geometry', {
 })
 
 POINT_MODEL = API.inherit('GeoJSON point', GEOMETRY_MODEL, {
-    'coordinates': fields.List(fields.Integer())
+    'coordinates': fields.List(fields.Float)
 })
 
 LINESTRING_MODEL = API.inherit('GeoJSON linestring', GEOMETRY_MODEL, {
-    'coordinates': fields.List(fields.List(fields.Integer()))
+    'coordinates': fields.List(fields.List(fields.Float))
 })
 
 # ===
@@ -64,19 +64,29 @@ FEATURE_MODEL = API.model('GeoJSON feature', {
     'geometry': fields.Polymorph({
         Point: POINT_MODEL,
         LineString: LINESTRING_MODEL
-    }, example=Point()),
+    }, example=Point((0, 0))),
     'properties': fields.Polymorph({
         MedicalOffice: MEDICAL_OFFICE_MODEL,
         FitnessTrail: FITNESS_TRAIL_MODEL,
         Hospital: HOSPITAL_MODEL,
         Gym: GYM_MODEL
-    })
+    }),
+    'distance': fields.Float(required=False, readonly=True, description='Distance to the structure')
 })
 
 FEATURE_COLLECTION_MODEL = API.model('GeoJSON feature collection', {
     'type': fields.String(enum=['FeatureCollection']),
     'features': fields.List(fields.Nested(FEATURE_MODEL))
 })
+
+# ===
+
+STRUCTURE_LIST_OPTIONS = API.parser()
+STRUCTURE_LIST_OPTIONS.add_argument('query', type=str, trim=True)
+STRUCTURE_LIST_OPTIONS.add_argument('bounds', type=float, action='split')
+
+STRUCTURE_OPTIONS = API.parser()
+STRUCTURE_OPTIONS.add_argument('distanceFrom', type=float, action='split')
 
 
 # ==================================================================================================
@@ -89,10 +99,12 @@ class StructureListController(Resource):
     """
 
     @API.doc('list_resources', security=None)
+    @API.expect(STRUCTURE_LIST_OPTIONS)
     @API.marshal_with(FEATURE_COLLECTION_MODEL)
     def get(self):
         """List all structures"""
-        return structures_to_geojson(get_all_structure())
+        args = STRUCTURE_LIST_OPTIONS.parse_args()
+        return structures_to_geojson(get_all_structure(**args))
 
     @jwt_required
     @API.doc('create_structure')
@@ -115,20 +127,24 @@ class StructureController(Resource):
     """
 
     @API.doc('get_structure', security=None)
-    @API.marshal_with(FEATURE_MODEL)
+    @API.expect(STRUCTURE_OPTIONS)
+    @API.marshal_with(FEATURE_MODEL, skip_none=True)
     def get(self, structure_id):
         """Get the resource"""
+        args = STRUCTURE_OPTIONS.parse_args()
         structure = get_structure(structure_id)
 
         if structure is None:
             self.not_found(structure_id)
 
-        return structure_to_geojson(structure)
+        return structure_to_geojson(structure, {
+            'distance': structure.get_distance_from(args['distanceFrom'])
+        })
 
     @jwt_required
     @API.doc('update_structure')
     @API.expect(FEATURE_MODEL)
-    @API.marshal_with(FEATURE_MODEL)
+    @API.marshal_with(FEATURE_MODEL, skip_none=True)
     def put(self, structure_id):
         """Update a structure given its identifier"""
         structure = geojson_to_structure(API.payload, structure_id, get_jwt_identity())

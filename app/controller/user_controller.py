@@ -128,7 +128,7 @@ class FavoritesUserController(Resource):
     @jwt_required
     @API.doc('add_favorite_to_user', security=None)
     @API.expect(FAVORITE_MODEL)
-    @API.marshal_with(FEATURE_MODEL)
+    @API.marshal_with(FEATURE_MODEL, skip_none=True)
     def post(self, user_id):
         """Add a new favorite for user"""
         structure_id = API.payload['structure_id']
