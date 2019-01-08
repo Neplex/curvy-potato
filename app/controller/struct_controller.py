@@ -74,8 +74,9 @@ FEATURE_MODEL = API.model('GeoJSON feature', {
     'distance': fields.Float(required=False, readonly=True, description='Distance to the structure')
 })
 
-FEATURE_COLLECTION_MODEL = API.model('GeoJSON feature collection', {
+FEATURE_COLLECTION_MODEL = API.model('GeoJSON feature collection', {    
     'type': fields.String(enum=['FeatureCollection']),
+    'bbox': fields.List(fields.Float(required=False), required=False),
     'features': fields.List(fields.Nested(FEATURE_MODEL))
 })
 
