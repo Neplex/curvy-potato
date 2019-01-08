@@ -80,7 +80,23 @@ def structure_to_geojson(structure, extras=None):
 
 def structures_to_geojson(structure_list):
     """Convert structure list to geojson"""
-    return FeatureCollection([structure_to_geojson(structure) for structure in structure_list])
+    bounding_box = []
+    structs_geojson = []
+    for structure in structure_list:
+        if not bounding_box:
+            for _ in range(2):
+                bounding_box.append(DB.session.scalar(structure.geom.ST_Centroid().ST_X()))
+                bounding_box.append(DB.session.scalar(structure.geom.ST_Centroid().ST_Y()))
+        bounding_box[0] = min(
+            DB.session.scalar(structure.geom.ST_Centroid().ST_X()), bounding_box[0])
+        bounding_box[1] = min(
+            DB.session.scalar(structure.geom.ST_Centroid().ST_Y()), bounding_box[1])
+        bounding_box[2] = max(
+            DB.session.scalar(structure.geom.ST_Centroid().ST_X()), bounding_box[2])
+        bounding_box[3] = max(
+            DB.session.scalar(structure.geom.ST_Centroid().ST_Y()), bounding_box[3])
+        structs_geojson.append(structure_to_geojson(structure))
+    return FeatureCollection(structs_geojson, bbox=bounding_box)
 
 
 def geojson_to_structure(geo, structure_id, user_id):
