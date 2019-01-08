@@ -86,7 +86,7 @@ def structures_to_geojson(structure_list):
         if not bounding_box:
             for _ in range(2):
                 bounding_box.append(DB.session.scalar(structure.geom.ST_Centroid().ST_X()))
-                bounding_box.append(DB.session.scalar(structure.geom.ST_Centroid().ST_Y()))        
+                bounding_box.append(DB.session.scalar(structure.geom.ST_Centroid().ST_Y()))
         bounding_box[0] = min(
             DB.session.scalar(structure.geom.ST_Centroid().ST_X()), bounding_box[0])
         bounding_box[1] = min(
