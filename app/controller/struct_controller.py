@@ -76,7 +76,7 @@ FEATURE_MODEL = API.model('GeoJSON feature', {
 
 FEATURE_COLLECTION_MODEL = API.model('GeoJSON feature collection', {
     'type': fields.String(enum=['FeatureCollection']),
-    'bbox': fields.List(fields.Float(required=False), required=False),
+    'bbox': fields.List(fields.Float, required=False, readonly=True),
     'features': fields.List(fields.Nested(FEATURE_MODEL))
 })
 
