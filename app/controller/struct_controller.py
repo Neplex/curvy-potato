@@ -4,7 +4,7 @@ Structure controller
 
 from flask import url_for
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from flask_restplus import Resource, Namespace, fields, abort
+from flask_restplus import Resource, Namespace, fields
 from geojson import Point, LineString
 
 from app.model.structure import StructureType, MedicalOffice, FitnessTrail, Hospital, Gym
@@ -134,10 +134,6 @@ class StructureController(Resource):
         """Get the resource"""
         args = STRUCTURE_OPTIONS.parse_args()
         structure = get_structure(structure_id)
-
-        if structure is None:
-            self.not_found(structure_id)
-
         return structure_to_geojson(structure, {
             'distance': structure.get_distance_from(args['distanceFrom'])
         })
@@ -159,9 +155,3 @@ class StructureController(Resource):
         """Delete a structure given its identifier"""
         delete_structure(structure_id)
         return '', 204
-
-    # TODO: Replace it by exception
-    @staticmethod
-    def not_found(structure_id):
-        """Wrapper for not found error"""
-        abort(404, "Structure %i doesn't exist" % structure_id)

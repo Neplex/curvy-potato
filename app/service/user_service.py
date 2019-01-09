@@ -3,11 +3,19 @@ User service
 """
 
 from sqlalchemy.orm import with_polymorphic
+from werkzeug.exceptions import NotFound
 
 from app.app import DB
 from app.model.structure import Structure
 from app.model.user import User
 from app.service.struct_service import get_structure
+
+
+class UserNotFound(NotFound):
+    """Structure not found Exception. Raised when a structure is not in DB"""
+
+    def __init__(self, user_id):
+        super().__init__("User {} doesn't exist".format(user_id))
 
 
 def get_all_user():
@@ -23,7 +31,10 @@ def add_user(user):
 
 def get_user(user_id):
     """Get a user from id"""
-    return User.query.get(user_id)
+    user = User.query.get(user_id)
+    if user is None:
+        raise UserNotFound(user_id)
+    return user
 
 
 def update_user(user):
@@ -35,20 +46,21 @@ def update_user(user):
 def delete_user(user_id):
     """Delete a defined user"""
     user = get_user(user_id)
-    if user is not None:
-        DB.session.delete(user)
-        DB.session.commit()
+    DB.session.delete(user)
+    DB.session.commit()
 
 
 def get_all_structure_by_user(user_id):
     """Get all structures from user"""
-    return DB.session.query(with_polymorphic(Structure, '*')).filter(Structure.user_id == user_id)
+    user = get_user(user_id)
+    return DB.session.query(with_polymorphic(Structure, '*')).filter(Structure.user_id == user.id)
 
 
 def get_favorites_by_user(user_id):
     """Get all favorites of an user"""
+    user = get_user(user_id)
     return DB.session.query(with_polymorphic(Structure, '*')).filter(
-        Structure.favorites_of.any(id=user_id))
+        Structure.favorites_of.any(id=user.id))
 
 
 def add_favorite_to_user(user_id, structure_id):

@@ -29,13 +29,14 @@ You can now start playing with the API by starting it with `flask run` and going
 
 To interact with the project, you need to use the command line interface (`flask`). The main commands are listed bellow but it can be outdated, we recommend to read the help from the command.
 
-| Command           |  description                                                       |
-| :---------------- | :----------------------------------------------------------------- |
-| run               | Start the development server.                                      |
-| database --init   | Initialize the database.                                           |
-| database --delete | Delete the database.                                               |
-| app add _name_    | Add a new application that can use the API. (Generate an API key.) |
-| app delete _name_ | Delete an application.                                             |
+| Command             |  Description                                                                 |
+| :------------------ | :--------------------------------------------------------------------------- |
+| run                 | Start the development server.                                                |
+| database --init     | Initialize the database.                                                     |
+| database --delete   | Delete the database.                                                         |
+| database --populate | Populate the database (Add test user "string" "string" and some structures). |
+| app add _name_      | Add a new application that can use the API. (Generate an API key.)           |
+| app delete _name_   | Delete an application.                                                       |
 
 ## API
 

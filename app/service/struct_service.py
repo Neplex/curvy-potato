@@ -5,10 +5,18 @@ Structure service
 from geojson import dumps, Feature, FeatureCollection
 from sqlalchemy import func
 from sqlalchemy.orm import with_polymorphic
+from werkzeug.exceptions import NotFound
 
 from app.app import DB
 from app.model.structure import StructureType, Structure, \
     MedicalOffice, FitnessTrail, Hospital, Gym
+
+
+class StructureNotFound(NotFound):
+    """Structure not found Exception. Raised when a structure is not in DB"""
+
+    def __init__(self, structure_id):
+        super().__init__("Structure {} doesn't exist".format(structure_id))
 
 
 def get_all_structure(query=None, bounds=None):
@@ -36,17 +44,6 @@ def get_all_structure(query=None, bounds=None):
     return result
 
 
-def get_all_structure_by_user(user_id):
-    """Get all structures from user"""
-    return DB.session.query(with_polymorphic(Structure, '*')).filter(Structure.user_id == user_id)
-
-
-def get_favourites_by_user(user_id):
-    """Get all favourites of an user"""
-    return DB.session.query(with_polymorphic(Structure, '*')).filter(
-        Structure.favourites_of.any(id=user_id))
-
-
 def add_structure(struct):
     """Add a structure in the database."""
     DB.session.add(struct)
@@ -55,7 +52,10 @@ def add_structure(struct):
 
 def get_structure(structure_id):
     """Get a structure from the DB given its identifier"""
-    return Structure.query.get(structure_id)
+    structure = Structure.query.get(structure_id)
+    if structure is None:
+        raise StructureNotFound(structure_id)
+    return structure
 
 
 def update_structure(structure):
@@ -66,16 +66,16 @@ def update_structure(structure):
 
 def delete_structure(structure_id):
     """Delete a structure from the DB given its identifier"""
-    struct = get_structure(structure_id)
-
-    if struct is not None:
-        DB.session.delete(struct)
-        DB.session.commit()
+    structure = get_structure(structure_id)
+    DB.session.delete(structure)
+    DB.session.commit()
 
 
 def structure_to_geojson(structure, extras=None):
     """Convert structure object to geojson"""
-    return Feature(None, structure.geometry, structure, **(extras or {}))
+    if structure is not None:
+        return Feature(None, structure.geometry, structure, **(extras or {}))
+    return None
 
 
 def structures_to_geojson(structure_list):
