@@ -1,0 +1,28 @@
+language:        python
+
+python:
+  - '3.6'
+  - 'pypy3.5'
+
+install:
+  - pip install -r requirements.txt
+  - pip install coverage
+  - pip install codecov
+  - pip install pylint
+
+script:
+  #  - coverage erase
+  #  - coverage run && coverage html
+  # Disable some warning: too-few-public-methods (R0903), no-self-use (R0201), fixme (W0511)
+  - pylint --output-format=text --disable=R0903,R0201,W0511 app
+
+#after_success:
+#  - codecov
+
+deploy:
+  provider:      heroku
+  api_key:
+    secure:      q1SM7pHE+zP0Qo7Rfsu9DgQKCbxUt7QwV7oejbkUQZtqBFLb54Nz0wCDyDR3hynSA1gvYg502JLcBi6+De6xlpuVCAJcjDcuxEBLzfPk/YeBF8EsYRa8ItADBxoz6lPWIaPLWvTRIIVsJ5xo4TBSlIt2ORYQu8B84oQNZXn5F1+Y7dAUijWu/KMJ0woTKKtRi0ooFafPeZDLRRmX4VQceduoj0SsKnjxfCmNLM8ZxJH9JKoRaHWrhKEXM2N6Nnxd57SM+dVXwQmKKyLODskWX82Qmow7aXexyNlKuXniTHs80K9FaodpgxlEVzlzSTBx3ndGGHp2V3ZMNR040sVNN9TSSVVA8AMTa/ZxfmnG8gw54yX1kAw69icsJvJRG4EV0MeTvr/+3gM8GKWvwUUCjGLXeuOhNmxwId+ABupm1e4k8yip18k/r+DU6FMzoYnSO0vYKU3qmUyZPHHVrkHpDaXvtCVvYoiYN5It/6EPjSRm6StW7BMCSLUSUcXncifk+lvgteNZ2c1ilRMRfJ426TpYPAznikdI+k1eDYK3zQS1jdu1hW6N9k2f48QFlnYWPUX2lZZqdjAEKHaUYZsVkGiUZeEKquJhbD+gdPOjcGnBfh2qGjb54EY1RW9R7u/0eX5ZheVx1WxXEDmCQbIMSgbXfcek+OzHghFNOiGsgZQ=
+  app:
+    master:      healthy-api-master
+    develop:     healthy-api-dev
