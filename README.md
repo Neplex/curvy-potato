@@ -3,6 +3,7 @@
 [![Build Status](https://img.shields.io/travis/com/Neplex/healthy-api/develop.svg)](https://travis-ci.com/Neplex/healthy-api)
 [![Heroku](http://heroku-badge.herokuapp.com/?app=healthy-api-dev&svg=1&style=flat)](https://healthy-api-dev.herokuapp.com/)
 ![License](https://img.shields.io/github/license/Neplex/healthy-api.svg)
+[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=Neplex/healthy-api)](https://dependabot.com)
 
 SIGN project
 
