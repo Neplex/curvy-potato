@@ -2,7 +2,9 @@
 
 [![Build Status](https://img.shields.io/travis/com/Neplex/healthy-api/develop.svg)](https://travis-ci.com/Neplex/healthy-api)
 [![Heroku](http://heroku-badge.herokuapp.com/?app=healthy-api-dev&svg=1&style=flat)](https://healthy-api-dev.herokuapp.com/)
+[![CodeFactor](https://www.codefactor.io/repository/github/neplex/healthy-api/badge)](https://www.codefactor.io/repository/github/neplex/healthy-api)
 ![License](https://img.shields.io/github/license/Neplex/healthy-api.svg)
+
 
 SIGN project
 
